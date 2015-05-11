@@ -67,7 +67,8 @@ class Dagger(MarioAgent):
             
             self.action = self.int2bin(actInt)
             #print "ACTION TAKEN", actInt," ",self.action
-            self.record_action = True; 
+            self.record_action = True
+            self.actionTaken = actInt
 
         return self.action
 
@@ -78,7 +79,8 @@ class Dagger(MarioAgent):
             self.isEpisodeOver = True
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
-            if(self.record_action): 
+            if(self.record_action and (action != 18)): 
+            #if(self.record_action):
                 self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 self.states = numpy.vstack((self.states,self.obsArray))
 

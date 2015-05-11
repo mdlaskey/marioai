@@ -10,6 +10,8 @@ from sklearn import preprocessing
 
 class Learner():
 
+	verbose = True
+
 	def Load(self):
 		self.States = pickle.load(open('states.p','rb'))
 		self.Actions = pickle.load(open('actions.p','rb'))
@@ -27,12 +29,15 @@ class Learner():
 		Action = np.ravel(Action)
 		
 		#States = csr_matrix(States)
+		#self.clf.class_weight = 'auto'
+
 		self.novel.nu = 1e-3
-		self.novel.gamma = 180
+		self.novel.gamma = 0.01
 		#self.kde = KernelDensity(kernel = 'gaussian', bandwidth=0.8).fit(States)
 		self.clf.fit(States,Action)
 		self.novel.fit(States)
-		print "SCORE OF MODEL", self.clf.score(States,Action)
+		if(self.verbose):
+			self.debugPolicy(States,Action)
 		#self.
 		#IPython.embed()
 		#IPython.embed()
@@ -48,7 +53,21 @@ class Learner():
 
 		return avg
 
+	def debugPolicy(self,States,Action):
+		prediction = self.clf.predict(States)
+		classes = dict()
 
+		for i in range(self.getNumData()):
+			if(Action[i] not in classes):
+				value = np.zeros(3)
+				classes.update({Action[i]:value})
+			classes[Action[i]][0] += 1
+			if(Action[i] != prediction[i]):
+				classes[Action[i]][1] += 1
+
+			classes[Action[i]][2] = classes[Action[i]][1]/classes[Action[i]][0] 
+		for d in classes:
+			print d, classes[d]
 
 
 

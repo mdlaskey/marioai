@@ -18,14 +18,15 @@ import numpy as np
 #TODO: reset sends: vis, diff=, lt=, ll=, rs=, mariomode, time limit, pw,
 # with creatures, without creatures HIGH.
 # send creatures.
-ITERATIONS = 15
+ITERATIONS = 30
 IT = False
 
 def main():
-    agent = Dagger(IT)
+    agent = Ahude(IT)
     distances = np.zeros([1])
     data = np.zeros([1])
     num_help = np.zeros([1])
+    mis_match = np.zeros([1])
 
 
     #task = MarioTask(agent.name, initMarioMode = 2)
@@ -49,22 +50,37 @@ def main():
           
             rewards = exp.doEpisodes(1)
             
-            size = len(rewards[0])
+           
            
             agent.updateModel()
+
+            if(agent._getName() == 'Ahude'):
+                num_help = np.vstack((num_help,np.array(agent.getNumHelp())))
+                mis_match = np.vstack((mis_match,np.array(agent.getMismatch())))
+                #agent.off = True
+                #rewards = exp.doEpisodes(1)
+                #agent.off = False
+
+            size = len(rewards[0])
                 
             distances = np.vstack((distances,np.array(rewards[0][size-1])))
             data = np.vstack((data,np.array(agent.getNumData())))
-            #num_help = np.vstack((num_help,np.array(agent.getNumHelp())))
+         
+            
+
           
             #agent.notComplete = False
             print "TRACK COMPLETE"
             agent.reset()
-            
-        #plt.figure(1)
-        #plt.plot(data,num_help)
+        IPython.embed()
         plt.figure(2)
         plt.plot(data,distances)
+
+        if(agent._getName() == 'Ahude'):    
+            plt.figure(1)
+            plt.plot(data,num_help)
+            plt.figure(3)
+            plt.plot(mis_match)
         plt.show()
     #agent.saveModel()
     print "finished"
