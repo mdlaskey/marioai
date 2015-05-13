@@ -174,7 +174,7 @@ public class MarioComponent extends JComponent implements Runnable, /*KeyListene
                 running = false;
                 break;
             }
-
+            
             boolean[] action = agent.getAction(this/*DummyEnvironment*/);
            
             actionTaken = expert.getAction(this);

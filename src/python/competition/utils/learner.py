@@ -32,7 +32,7 @@ class Learner():
 		#self.clf.class_weight = 'auto'
 
 		self.novel.nu = 1e-3
-		self.novel.gamma = 0.01
+		self.novel.gamma = 1e-3
 		#self.kde = KernelDensity(kernel = 'gaussian', bandwidth=0.8).fit(States)
 		self.clf.fit(States,Action)
 		self.novel.fit(States)
@@ -101,7 +101,8 @@ class Learner():
 	def updateModel(self,new_states,new_actions):
 		print "UPDATING MODEL"
 
-
+		#self.States = new_states
+		#self.Actions = new_actions
 		self.States = np.vstack((self.States,new_states))
 		self.Actions = np.vstack((self.Actions,new_actions))
 		self.trainModel(self.States,self.Actions)

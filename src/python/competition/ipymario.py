@@ -14,20 +14,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
+
 #from pybrain.... episodic import EpisodicExperiment
 #TODO: reset sends: vis, diff=, lt=, ll=, rs=, mariomode, time limit, pw,
 # with creatures, without creatures HIGH.
 # send creatures.
-ITERATIONS = 30
+ITERATIONS = 40
 IT = False
 
 def main():
-    agent = Ahude(IT)
+    f = open('try_3.txt','w')
+    agent = Ahude(IT,f)
     distances = np.zeros([1])
     data = np.zeros([1])
     num_help = np.zeros([1])
     mis_match = np.zeros([1])
-
+    
 
     #task = MarioTask(agent.name, initMarioMode = 2)
     #exp = EpisodicExperiment(task, agent)
@@ -41,18 +43,22 @@ def main():
     if(agent.initialTraining):
         exp.doEpisodes(5)
         agent.newModel()
+        agent.saveModel()
     else:
         for i in range(ITERATIONS):
+            #IPython.embed()
             #if( i == 2):
                 #agent.initialTraining = True; 
              #   IPython.embed()
-            print agent.initialTraining
-          
+            print "ITERATION",i
+            f.write('ITERATION %i \n' %i)
+            f.write('___________________________________________________\n')
             rewards = exp.doEpisodes(1)
             
            
            
             agent.updateModel()
+           
 
             if(agent._getName() == 'Ahude'):
                 num_help = np.vstack((num_help,np.array(agent.getNumHelp())))
@@ -65,14 +71,15 @@ def main():
                 
             distances = np.vstack((distances,np.array(rewards[0][size-1])))
             data = np.vstack((data,np.array(agent.getNumData())))
-         
-            
-
+            agent.reset()
           
             #agent.notComplete = False
             print "TRACK COMPLETE"
-            agent.reset()
+        #IPython.embed()
         IPython.embed()
+        f.close()           
+       
+
         plt.figure(2)
         plt.plot(data,distances)
 

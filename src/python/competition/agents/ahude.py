@@ -5,6 +5,7 @@ __date__ = "$May 1, 2009 2:46:34 AM$"
 
 from marioagent import MarioAgent
 from utils.learner import Learner
+import time 
 
 class Ahude(MarioAgent):
     """ In fact the Python twin of the
@@ -32,8 +33,9 @@ class Ahude(MarioAgent):
         self.trueJumpCounter = 0;
         self.trueSpeedCounter = 0;
         
-    def __init__(self,initialTraining):
+    def __init__(self,initialTraining,fl):
         """Constructor"""
+        self.file = fl
         self.trueJumpCounter = 0
         self.trueSpeedCounter = 0
         self.initialTraining = initialTraining
@@ -61,6 +63,7 @@ class Ahude(MarioAgent):
 #            self.levelScene[11,13], self.trueJumpCounter)
 #        if (self.isEpisodeOver):
 #            return numpy.ones(5, int)
+        #time.sleep(1)
        
         if((self.initialTraining or self.learner.askForHelp(self.obsArray) == -1) and not self.off):
             self.action = numpy.zeros(6,int)
@@ -70,7 +73,8 @@ class Ahude(MarioAgent):
             self.record_action = True; 
             self.askedHelp = True
             #print "ASKING FOR HELP"
-            self.wouldTake = self.learner.getAction(self.obsArray)
+            if(not self.initialTraining):
+                self.wouldTake = self.learner.getAction(self.obsArray)
         else: 
             if(not self.off):
                 self.count += 1 
@@ -94,13 +98,20 @@ class Ahude(MarioAgent):
         self.obs = obs
         if (len(obs) != 8):
             self.isEpisodeOver = True
+
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
-            if(self.askedHelp):
+            if(self.askedHelp and not self.initialTraining):
+           
+                self.file.write("Expert, " + str(action)+" "+str(self.marioFloats) + " "+str(self.isMarioOnGround) +" "+str(self.mayMarioJump)+"\n" )
                 if(self.wouldTake != action):
                     self.mismatch += 1.0
                 self.countLean += 1.0
-            if(self.record_action and (action != 18) and not self.off): 
+            else: 
+                self.file.write("Robot, " + str(action)+" "+str(self.marioFloats) + " "+str(self.isMarioOnGround) +" "+str(self.mayMarioJump)+"\n" )
+
+            if((self.record_action and (action != 18) and not self.off) or self.initialTraining):
+            #if(self.record_action and not self.off):
                 self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 self.states = numpy.vstack((self.states,self.obsArray))
                 
