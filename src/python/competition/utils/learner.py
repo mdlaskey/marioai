@@ -12,9 +12,15 @@ class Learner():
 
 	verbose = True
 
-	def Load(self):
+	def Load(self,gamma = 1e-3):
 		self.States = pickle.load(open('states.p','rb'))
 		self.Actions = pickle.load(open('actions.p','rb'))
+		self.gamma = gamma 
+		self.trainModel(self.States,self.Actions)
+		
+	def clearModel(self):
+		self.States = pickle.load(open('states.p','rb'))
+		self.Actions = pickle.load(open('actions.p','rb')) 
 		self.trainModel(self.States,self.Actions)
 
 
@@ -32,7 +38,7 @@ class Learner():
 		#self.clf.class_weight = 'auto'
 
 		self.novel.nu = 1e-3
-		self.novel.gamma = 1e-3
+		self.novel.gamma = self.gamma
 		#self.kde = KernelDensity(kernel = 'gaussian', bandwidth=0.8).fit(States)
 		self.clf.fit(States,Action)
 		self.novel.fit(States)

@@ -19,7 +19,7 @@ import numpy as np
 #TODO: reset sends: vis, diff=, lt=, ll=, rs=, mariomode, time limit, pw,
 # with creatures, without creatures HIGH.
 # send creatures.
-ITERATIONS = 40
+ITERATIONS = 35
 IT = False
 
 def main():

@@ -33,7 +33,7 @@ class Ahude(MarioAgent):
         self.trueJumpCounter = 0;
         self.trueSpeedCounter = 0;
         
-    def __init__(self,initialTraining,fl):
+    def __init__(self,initialTraining,fl,gamma=1e-3):
         """Constructor"""
         self.file = fl
         self.trueJumpCounter = 0
@@ -50,8 +50,9 @@ class Ahude(MarioAgent):
         self.notComplete = True; 
         self.askedHelp = False; 
         self.off = False 
+      
         if(not self.initialTraining):
-            self.learner.Load()
+            self.learner.Load(gamma)
         
  
 

@@ -106,7 +106,10 @@ class Dagger(MarioAgent):
 
     def getNumData(self): 
         return self.learner.getNumData()
-
+        
+    def getName(self):
+        return "Dagger"
+        
     def reset(self):
         self.actions = numpy.array([0])
         self.states  = numpy.zeros(489)
