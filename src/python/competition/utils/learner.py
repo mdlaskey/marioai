@@ -6,21 +6,30 @@ import cPickle as pickle
 from numpy import linalg as LA
 from sklearn import svm 
 from sklearn import preprocessing  
+from sklearn import linear_model
+from sklearn import metrics 
 #from scipy.sparse import csr_matrix
 
 class Learner():
 
 	verbose = True
+	option_1 = False 
+	gamma = 1e-3
+	gamma_clf = 1e-3
+	first_time = True 
+	iter_  = 1
 
 	def Load(self,gamma = 1e-3):
 		self.States = pickle.load(open('states.p','rb'))
 		self.Actions = pickle.load(open('actions.p','rb'))
+		self.Weights = np.zeros(self.Actions.shape)+1
 		self.gamma = gamma 
 		self.trainModel(self.States,self.Actions)
 		
 	def clearModel(self):
 		self.States = pickle.load(open('states.p','rb'))
 		self.Actions = pickle.load(open('actions.p','rb')) 
+		self.Weights = np.zeros(self.Actions.shape)+1
 		self.trainModel(self.States,self.Actions)
 
 
@@ -30,6 +39,7 @@ class Learner():
 	
 		print States.shape
 		print Action.shape
+	
 		self.scaler = preprocessing.StandardScaler().fit(States)
 		States = self.scaler.transform(States)
 		Action = np.ravel(Action)
@@ -39,8 +49,21 @@ class Learner():
 
 		self.novel.nu = 1e-3
 		self.novel.gamma = self.gamma
+
+		#self.clf.C = 100
+		#self.clf.kernel = 'rbf'
+		#self.clf.gamma = 100
+		#self.iter_ +=1  
+
+	
+		self.clf.fit(States,Action,self.Weights[:,0])
+
+
+		#SVM parameters computed via cross validation
+	
+		
 		#self.kde = KernelDensity(kernel = 'gaussian', bandwidth=0.8).fit(States)
-		self.clf.fit(States,Action)
+		
 		self.novel.fit(States)
 		if(self.verbose):
 			self.debugPolicy(States,Action)
@@ -75,7 +98,10 @@ class Learner():
 		for d in classes:
 			print d, classes[d]
 
+		self.precision = self.clf.score(States,Action)
 
+	def getPrecision(self):
+		return self.precision
 
  	def getAction(self,state):
  		state = self.scaler.transform(state)
@@ -102,16 +128,21 @@ class Learner():
 		#actions = csr_matrix(actions)
 		self.States = states
 		self.Actions = actions
+		self.Weights = np.zeros(actions.shape)+1
 		self.trainModel(self.States,self.Actions)
 
-	def updateModel(self,new_states,new_actions):
+	def updateModel(self,new_states,new_actions,weights):
 		print "UPDATING MODEL"
 
 		#self.States = new_states
 		#self.Actions = new_actions
-		self.States = np.vstack((self.States,new_states))
-		self.Actions = np.vstack((self.Actions,new_actions))
-		self.trainModel(self.States,self.Actions)
+		if(self.option_1):
+			self.trainModel(new_states,new_actions)
+		else:
+			self.States = np.vstack((self.States,new_states))
+			self.Actions = np.vstack((self.Actions,new_actions))
+			self.Weights = np.vstack((self.Weights,weights))
+			self.trainModel(self.States,self.Actions)
 
 	def saveModel(self):
 		pickle.dump(self.States,open('states.p','wb'))

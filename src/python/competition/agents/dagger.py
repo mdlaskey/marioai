@@ -32,22 +32,26 @@ class Dagger(MarioAgent):
         self.trueJumpCounter = 0;
         self.trueSpeedCounter = 0;
         
-    def __init__(self,initialTraining):
+    def __init__(self,initialTraining,options = False):
         """Constructor"""
         self.trueJumpCounter = 0
         self.trueSpeedCounter = 0
         self.action = numpy.zeros(6, int)
+        self.weight = numpy.zeros(1)
         self.initialTraining = initialTraining
+        self.actionTaken = 0
         self.actions = numpy.array([0])
         self.action[5] = 0
         self.states  = numpy.zeros(489)
         self.actionStr = ""
         self.learner = Learner()
+        self.learner.option_1 = options
         self.count = 0; 
-        if(not self.initialTraining):
-            self.learner.Load()
+        self.prevMario = 0.0
+      
         
- 
+    def loadModel(self):
+        self.learner.Load()
 
     def getAction(self):
         """ Possible analysis of current observation and sending an action back
@@ -64,7 +68,7 @@ class Dagger(MarioAgent):
         else: 
 
             actInt = self.learner.getAction(self.obsArray)
-            
+            #print 'State',self.obsArray, " ", actInt
             self.action = self.int2bin(actInt)
             #print "ACTION TAKEN", actInt," ",self.action
             self.record_action = True
@@ -79,24 +83,39 @@ class Dagger(MarioAgent):
             self.isEpisodeOver = True
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
-            if(self.record_action and (action != 18)): 
-            #if(self.record_action):
+            if(self.initialTraining):
                 self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 self.states = numpy.vstack((self.states,self.obsArray))
-
-
+            elif(self.record_action and self.prevMario != self.marioFloats[0]): 
+                if((self.actionTaken != action)):
+                    self.prevMario = self.marioFloats[0]
+                    self.actions = numpy.vstack((self.actions,numpy.array([action])))
+                    self.states = numpy.vstack((self.states,self.obsArray))
+                    if(action == 26 or action == 10):
+                        weight = 2
+                    else: 
+                        weight = 1 
+                    self.weight = numpy.vstack((self.weight,weight))
+                    print "WEIGHT",self.weight.shape
             #self.printLevelScene()
     def int2bin(self,num):
         action = numpy.zeros(6)
         actStr = numpy.binary_repr(num)
         
         for i in range(len(actStr)):
-        
+
             action[i] = float(actStr[len(actStr)-1-i])
         return action 
 
     def updateModel(self):
-        self.learner.updateModel(self.states,self.actions)
+        print self.states
+        print self.actions 
+
+        self.learner.updateModel(self.states,self.actions,self.weight)
+        self.dataAdded = self.actions.shape[0]
+
+    def getDataAdded(self):
+        return self.dataAdded
 
     def newModel(self):
         self.learner.newModel(self.states,self.actions)
@@ -113,6 +132,7 @@ class Dagger(MarioAgent):
     def reset(self):
         self.actions = numpy.array([0])
         self.states  = numpy.zeros(489)
+        self.weight = numpy.zeros(1)
 
     def printLevelScene(self):
         ret = ""

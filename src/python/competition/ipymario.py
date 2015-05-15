@@ -20,7 +20,7 @@ import numpy as np
 # with creatures, without creatures HIGH.
 # send creatures.
 ITERATIONS = 35
-IT = False
+IT = True
 
 def main():
     f = open('try_3.txt','w')
@@ -41,7 +41,7 @@ def main():
     task.env.initMarioMode = 2
     task.env.levelDifficulty = 1
     if(agent.initialTraining):
-        exp.doEpisodes(5)
+        exp.doEpisodes(2)
         agent.newModel()
         agent.saveModel()
     else:

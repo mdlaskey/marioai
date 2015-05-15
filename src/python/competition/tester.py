@@ -43,12 +43,27 @@ class Tester:
         num_mismatch = np.zeros(iterations)
         avg_data = np.zeros(iterations) 
         avg_distance = np.zeros(iterations)
+        avg_precision = np.zeros(iterations)
         
+        
+
+
         for r in range(rounds):
+
+            self.agent.initialTraining = True
+            self.exp.doEpisodes(2)
+            self.agent.newModel()
+            self.agent.saveModel()
+            self.agent.initialTraining = False 
+            self.agent.loadModel()
+            self.agent.reset()
+
+
             distances = np.zeros(iterations)
             mis_match = np.zeros(iterations)
             data = np.zeros(iterations)
             num_help = np.zeros(iterations)
+            precision = np.zeros(iterations)
             for t in range(iterations):
                 
                 rewards = self.exp.doEpisodes(1)
@@ -66,9 +81,11 @@ class Tester:
                     self.agent.off = False
 
                 size = len(rewards[0])
+               
                     
                 distances[t] = rewards[0][size-1]
-                data[t] = self.agent.getNumData()
+                data[t] = self.agent.getDataAdded()
+                precision[t] = self.agent.learner.getPrecision()
                 self.agent.reset()
              
             if(self.agent._getName() == 'Ahude'):
@@ -77,14 +94,18 @@ class Tester:
 
             avg_data = data+avg_data
             avg_distance = distances+avg_distance 
+            avg_precision = precision+avg_precision
             self.agent.learner.clearModel()
+            self.exp.task.env.changeLevel()
         
         num_ask_help = num_ask_help/rounds
         num_mismatch = num_mismatch/rounds
         avg_data = avg_data/rounds
         avg_distance = avg_distance/rounds 
+        avg_precision = avg_precision/rounds 
         
-        return avg_data,avg_distance,num_mismatch,num_ask_help 
+
+        return avg_data,avg_distance,num_mismatch,num_ask_help,avg_precision 
 
              
              

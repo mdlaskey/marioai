@@ -115,6 +115,9 @@ def extractObservation(data):
                 k += 1
         k += 3
         marioFloats = (float(data[k]), float(data[k + 1]))
+        #obs_array = numpy.zeros(2)
+        #obs_array[0] = marioFloats[0]
+        #obs_array[1] = marioFloats[1]
         k += 2  
         k_a = k
         action = 0; 

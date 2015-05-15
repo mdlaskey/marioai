@@ -16,7 +16,7 @@ class MarioEnvironment(TCPEnvironment):
     levelSeed = 1
     timeLimit = 20
     fastTCP = False
-    
+  
     # Other settings
     visualization = True
     otherServerArgs = ""
@@ -47,3 +47,9 @@ class MarioEnvironment(TCPEnvironment):
 
         self.client.sendData("reset -maxFPS on " + argstring + self.otherServerArgs + "\r\n")
 
+
+    def changeLevel(self):
+        self.levelSeed += 1
+
+        if(self.levelSeed == 9):
+            self.levelSeed = 10 
