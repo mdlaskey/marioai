@@ -38,7 +38,9 @@ class Ahude(MarioAgent):
         self.file = fl
         self.trueJumpCounter = 0
         self.trueSpeedCounter = 0
+        self.weight = numpy.zeros(1)
         self.initialTraining = initialTraining
+        self.actionTaken = 0
         self.action = numpy.zeros(6, int)
         self.actions = numpy.array([0])
         self.states  = numpy.zeros(489)
@@ -50,11 +52,12 @@ class Ahude(MarioAgent):
         self.notComplete = True; 
         self.askedHelp = False; 
         self.off = False 
-      
-        if(not self.initialTraining):
-            self.learner.Load(gamma)
+        self.prevMario = 0.0
+        self.gamma = gamma 
+
         
- 
+    def loadModel(self):
+        self.learner.Load(self.gamma)
 
     def getAction(self):
         """ Possible analysis of current observation and sending an action back
@@ -75,13 +78,14 @@ class Ahude(MarioAgent):
             self.askedHelp = True
             #print "ASKING FOR HELP"
             if(not self.initialTraining):
-                self.wouldTake = self.learner.getAction(self.obsArray)
+                self.actionTaken = self.learner.getAction(self.obsArray)
         else: 
             if(not self.off):
                 self.count += 1 
             actInt = self.learner.getAction(self.obsArray)
             self.askedHelp = False
             self.action = self.int2bin(actInt)
+            self.actionTaken = actInt
             #print "ACTION TAKEN", actInt," ",self.action
             if(self.notComplete):
                 self.record_action = True; 
@@ -102,20 +106,21 @@ class Ahude(MarioAgent):
 
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
-            if(self.askedHelp and not self.initialTraining):
-           
-                self.file.write("Expert, " + str(action)+" "+str(self.marioFloats) + " "+str(self.isMarioOnGround) +" "+str(self.mayMarioJump)+"\n" )
-                if(self.wouldTake != action):
-                    self.mismatch += 1.0
-                self.countLean += 1.0
-            else: 
-                self.file.write("Robot, " + str(action)+" "+str(self.marioFloats) + " "+str(self.isMarioOnGround) +" "+str(self.mayMarioJump)+"\n" )
-
-            if((self.record_action and (action != 18) and not self.off) or self.initialTraining):
-            #if(self.record_action and not self.off):
+            if(self.off):
+                return
+            elif(self.initialTraining):
                 self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 self.states = numpy.vstack((self.states,self.obsArray))
-                
+            elif(self.record_action and self.prevMario != self.marioFloats[0]): 
+                if((self.actionTaken != action)):
+                    self.prevMario = self.marioFloats[0]
+                    self.actions = numpy.vstack((self.actions,numpy.array([action])))
+                    self.states = numpy.vstack((self.states,self.obsArray))
+                    if(action == 26 or action == 10):
+                        weight = 2
+                    else: 
+                        weight = 1 
+                    self.weight = numpy.vstack((self.weight,weight))
 
 
             #self.printLevelScene()
@@ -128,11 +133,13 @@ class Ahude(MarioAgent):
         return action 
 
     def updateModel(self):
-        self.learner.updateModel(self.states,self.actions)
-
+        self.learner.updateModel(self.states,self.actions,self.weight)
+        self.dataAdded = self.actions.shape[0]
+    
 
     def getNumData(self): 
         return self.learner.getNumData()
+        
     def newModel(self):
         self.learner.newModel(self.states,self.actions)
 
@@ -140,16 +147,17 @@ class Ahude(MarioAgent):
         self.learner.saveModel()
 
     def getMismatch(self):
-        m = self.mismatch/self.countLean
-        self.mismatch = 0.0
-        self.countLean = 0.0
+        m = 0
         return m 
 
+    def getDataAdded(self):
+        return self.dataAdded
+        
     def reset(self):
         self.actions = numpy.array([0])
         self.states  = numpy.zeros(489)
-
-
+        self.weight = numpy.zeros(1)
+        
     def printLevelScene(self):
         ret = ""
         for x in range(22):

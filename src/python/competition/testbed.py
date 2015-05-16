@@ -33,14 +33,14 @@ def main():
 
     results = [] 
     names = [] 
-
+    results = pickle.load(open('results.p','rb'))
     #test dagger
-    agent = Dagger(IT)
-    exp = EpisodicExperiment(task, agent) 
-    T = Tester(agent,exp)
-    dagger_results = T.test(rounds = 7)
-    results.append(dagger_results)
-    names.append('dagger_linear_online')
+    # agent = Dagger(IT)
+    # exp = EpisodicExperiment(task, agent) 
+    # T = Tester(agent,exp)
+    # dagger_results = T.test()
+    # results.append(dagger_results)
+    # names.append('dagger_linear_online')
     
     #test dagger
     # agent = Dagger(IT)
@@ -59,23 +59,28 @@ def main():
     # T = Tester(agent,exp)
     # ahude_big_results = T.test()
     # results.append(ahude_big_results)
-    # name.append('ahude_big')
+    # names.append('ahude_1e-2')
+
+    pickle.dump(results,open('results.p','wb'))
+
 
     # #test med ahude
-    # agent = Ahude(IT,f,gamma = 5e-3)
+    # agent = Ahude(IT,f,gamma = 1e-4)
     # exp = EpisodicExperiment(task, agent) 
     # T = Tester(agent,exp)
     # ahude_med_results = T.test()
     # results.append(ahude_med_results)
-    # names.append('ahude_med')
+    # names.append('ahude_1e-4')
     
+    pickle.dump(results,open('results.p','wb'))
+
     # #test small ahude 
     # agent = Ahude(IT,f,gamma = 1e-3)
     # exp = EpisodicExperiment(task, agent) 
     # T = Tester(agent,exp)
     # ahude_small_results = T.test() 
     # results.append(ahude_small_results)
-    # names.append('ahude_small')
+    # names.append('ahude_1e-3')
     
  
     pickle.dump(results,open('results.p','wb'))

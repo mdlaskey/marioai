@@ -96,7 +96,7 @@ class Dagger(MarioAgent):
                     else: 
                         weight = 1 
                     self.weight = numpy.vstack((self.weight,weight))
-                    print "WEIGHT",self.weight.shape
+
             #self.printLevelScene()
     def int2bin(self,num):
         action = numpy.zeros(6)

@@ -51,5 +51,8 @@ class MarioEnvironment(TCPEnvironment):
     def changeLevel(self):
         self.levelSeed += 1
 
-        if(self.levelSeed == 9):
-            self.levelSeed = 10 
+        if(self.levelSeed == 9 ):
+            self.levelSeed +=1 
+   
+    def setLevelBack(self):
+        self.levelSeed = 1

@@ -103,6 +103,7 @@ class Tester:
         avg_data = avg_data/rounds
         avg_distance = avg_distance/rounds 
         avg_precision = avg_precision/rounds 
+        self.exp.task.env.setLevelBack()
         
 
         return avg_data,avg_distance,num_mismatch,num_ask_help,avg_precision 
