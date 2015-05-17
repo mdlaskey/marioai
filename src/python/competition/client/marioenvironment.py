@@ -13,7 +13,7 @@ class MarioEnvironment(TCPEnvironment):
     levelType = 0
     creaturesEnabled = True
     initMarioMode = 2
-    levelSeed = 12
+    levelSeed = 1
     timeLimit = 20
     fastTCP = False
   
@@ -51,7 +51,7 @@ class MarioEnvironment(TCPEnvironment):
     def changeLevel(self):
         self.levelSeed += 1
 
-        if(self.levelSeed == 9 ):
+        if(self.levelSeed == 9 or self.levelSeed == 18):
             self.levelSeed +=1 
    
     def setLevelBack(self):
