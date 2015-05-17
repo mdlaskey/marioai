@@ -35,20 +35,20 @@ def main():
     names = [] 
 
     #test dagger
-    agent = Dagger(IT)
-    exp = EpisodicExperiment(task, agent) 
-    T = Tester(agent,exp)
-    dagger_results = T.test(rounds = 7)
-    results.append(dagger_results)
-    names.append('dagger_linear_online')
-    
-    #test dagger
     # agent = Dagger(IT)
     # exp = EpisodicExperiment(task, agent) 
     # T = Tester(agent,exp)
-    # dagger_results = T.test(rounds=5)
+    # dagger_results = T.test(rounds = 7)
     # results.append(dagger_results)
-    # names.append('dagger_no_weight')
+    # names.append('dagger_linear_online')
+    
+    #test dagger
+    agent = Dagger(IT)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    dagger_results = T.test(rounds=5)
+    results.append(dagger_results)
+    names.append('dagger_no_weight')
 
 
     
