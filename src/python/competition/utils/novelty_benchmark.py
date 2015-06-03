@@ -9,10 +9,10 @@ from sklearn.svm import OneClassSVM
 import matplotlib.pyplot as plt
 import matplotlib.font_manager
 from sklearn.datasets import load_boston
+import cPickle as pickle 
 
 # Get data
-X1 = load_boston()['data'][:, [8, 10]]  # two clusters
-X2 = load_boston()['data'][:, [5, 12]]  # "banana"-shaped
+X1 = pickle.load(open('state.p','rb'))
 
 # Define "classifiers" to be used
 classifiers = {
@@ -20,7 +20,7 @@ classifiers = {
                                              contamination=0.261),
     "Robust Covariance (Minimum Covariance Determinant)":
     EllipticEnvelope(contamination=0.261),
-    "OCSVM": OneClassSVM(nu=1e-3, gamma=5)}
+    "OCSVM": OneClassSVM(nu=1e-3, gamma=2)}
 colors = ['m', 'g', 'b']
 legend1 = {}
 legend2 = {}
@@ -35,14 +35,6 @@ for i, (clf_name, clf) in enumerate(classifiers.items()):
     Z1 = Z1.reshape(xx1.shape)
     legend1[clf_name] = plt.contour(
         xx1, yy1, Z1, levels=[0], linewidths=2, colors=colors[i])
-    plt.figure(2)
-    clf.fit(X2)
-    ANS = clf_name,clf.predict(X2)
-    print ANS
-    Z2 = clf.decision_function(np.c_[xx2.ravel(), yy2.ravel()])
-    Z2 = Z2.reshape(xx2.shape)
-    legend2[clf_name] = plt.contour(
-        xx2, yy2, Z2, levels=[0], linewidths=2, colors=colors[i])
 
 legend1_values_list = list( legend1.values() )
 legend1_keys_list = list( legend1.keys() )
@@ -64,24 +56,9 @@ plt.legend((legend1_values_list[0].collections[0],
            (legend1_keys_list[0], legend1_keys_list[1], legend1_keys_list[2]),
            loc="upper center",
            prop=matplotlib.font_manager.FontProperties(size=12))
-plt.ylabel("accessibility to radial highways")
-plt.xlabel("pupil-teatcher ratio by town")
+plt.ylabel("Y Position")
+plt.xlabel("X Position")
 
-legend2_values_list = list( legend2.values() )
-legend2_keys_list = list( legend2.keys() )
 
-plt.figure(2)  # "banana" shape
-plt.title("Outlier detection on a real data set (boston housing)")
-plt.scatter(X2[:, 0], X2[:, 1], color='black')
-plt.xlim((xx2.min(), xx2.max()))
-plt.ylim((yy2.min(), yy2.max()))
-plt.legend((legend2_values_list[0].collections[0],
-            legend2_values_list[1].collections[0],
-            legend2_values_list[2].collections[0]),
-           (legend2_values_list[0], legend2_values_list[1], legend2_values_list[2]),
-           loc="upper center",
-           prop=matplotlib.font_manager.FontProperties(size=12))
-plt.ylabel("% lower status of the population")
-plt.xlabel("average number of rooms per dwelling")
 
 plt.show()

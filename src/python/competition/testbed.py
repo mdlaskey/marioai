@@ -35,22 +35,22 @@ def main():
     names = [] 
     
     #test dagger
-    # agent = Dagger(IT)
-    # exp = EpisodicExperiment(task, agent) 
-    # T = Tester(agent,exp)
-    # dagger_results = T.test()
-    # results.append(dagger_results)
-    # names.append('dagger_no_weight')
+    agent = Dagger(IT)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    dagger_results = T.test(iterations= 35,rounds = 1)
+    results.append(dagger_results)
+    names.append('dagger_no_weight')
 
 
     
-    # # #test big ahude
-    agent = Ahude(IT,f,gamma = 1e-2)
-    exp = EpisodicExperiment(task, agent) 
-    T = Tester(agent,exp)
-    ahude_big_results = T.test()
-    results.append(ahude_big_results)
-    names.append('ahude_1e-2')
+    # # # #test big ahude
+    # agent = Ahude(IT,f,gamma = 1e-2)
+    # exp = EpisodicExperiment(task, agent) 
+    # T = Tester(agent,exp)
+    # ahude_big_results = T.test()
+    # results.append(ahude_big_results)
+    # names.append('ahude_1e-2')
 
     # pickle.dump(results,open('results.p','wb'))
 
@@ -74,7 +74,7 @@ def main():
     # names.append('ahude_1e-3')
     
  
-    # pickle.dump(results,open('results.p','wb'))
+    pickle.dump(results,open('results.p','wb'))
 
     plt.figure(1)
     for i in range(len(results)):

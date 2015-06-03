@@ -13,8 +13,9 @@ class MarioEnvironment(TCPEnvironment):
     levelType = 0
     creaturesEnabled = True
     initMarioMode = 2
-    levelSeed = 22
-    timeLimit = 20
+    levelSeed = 1
+    levelLength = 4200
+    timeLimit = 40
     fastTCP = False
   
     # Other settings
@@ -28,11 +29,12 @@ class MarioEnvironment(TCPEnvironment):
         return extractObservation(data)
 
     def reset(self):
-        argstring = "-ld %d -lt %d -mm %d -ls %d -tl %d " % (self.levelDifficulty,
+        argstring = "-ld %d -lt %d -mm %d -ls %d -tl %d -ll %d " % (self.levelDifficulty,
                                                             self.levelType,
                                                             self.initMarioMode,
                                                             self.levelSeed,
-                                                            self.timeLimit
+                                                            self.timeLimit,
+                                                            self.levelLength
                                                             )
         if self.creaturesEnabled:
             argstring += "-pw off "

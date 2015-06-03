@@ -8,7 +8,8 @@ from sklearn import svm
 from sklearn import preprocessing  
 from sklearn import linear_model
 from sklearn import metrics 
-#from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix
+from scipy.sparse import vstack
 
 class Learner():
 
@@ -34,29 +35,28 @@ class Learner():
 
 
 	def trainModel(self,States,Action):
-		self.clf = svm.SVC()
+		self.clf = svm.LinearSVC()
 		self.novel = svm.OneClassSVM()
 	
 		print States.shape
 		print Action.shape
 	
-		self.scaler = preprocessing.StandardScaler().fit(States)
-		States = self.scaler.transform(States)
+		#self.scaler = preprocessing.StandardScaler().fit(States)
+		#States = self.scaler.transform(States)
 		Action = np.ravel(Action)
 		
-		#States = csr_matrix(States)
-		#self.clf.class_weight = 'auto'
+		
+		self.clf.class_weight = 'auto'
 
 		self.novel.nu = 1e-3
 		self.novel.gamma = self.gamma
 
-		#self.clf.C = 100
-		#self.clf.kernel = 'rbf'
+		self.clf.C = 1e-2
+		#self.clf.kernel = 'linear'
 		#self.clf.gamma = 100
 		#self.iter_ +=1  
 
-	
-		self.clf.fit(States,Action,self.Weights[:,0])
+		self.clf.fit(States,Action)
 
 
 		#SVM parameters computed via cross validation
@@ -64,7 +64,7 @@ class Learner():
 		
 		#self.kde = KernelDensity(kernel = 'gaussian', bandwidth=0.8).fit(States)
 		
-		self.novel.fit(States)
+		#self.novel.fit(States)
 		if(self.verbose):
 			self.debugPolicy(States,Action)
 		#self.
@@ -104,8 +104,7 @@ class Learner():
 		return self.precision
 
  	def getAction(self,state):
- 		state = self.scaler.transform(state)
- 		#state = csr_matrix(state)
+ 		state = csr_matrix(state)
 		return self.clf.predict(state)
 
 	def askForHelp(self,state):
@@ -124,8 +123,8 @@ class Learner():
 		return self.Actions.shape[0]
 
 	def newModel(self,states,actions):
-		#states = csr_matrix(states)
-		#actions = csr_matrix(actions)
+		states = csr_matrix(states)
+
 		self.States = states
 		self.Actions = actions
 		self.Weights = np.zeros(actions.shape)+1
@@ -136,10 +135,11 @@ class Learner():
 
 		#self.States = new_states
 		#self.Actions = new_actions
+		new_states = csr_matrix(new_states)
 		if(self.option_1):
 			self.trainModel(new_states,new_actions)
 		else:
-			self.States = np.vstack((self.States,new_states))
+			self.States = vstack((self.States,new_states))
 			self.Actions = np.vstack((self.Actions,new_actions))
 			self.Weights = np.vstack((self.Weights,weights))
 			self.trainModel(self.States,self.Actions)
