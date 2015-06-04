@@ -38,7 +38,7 @@ def main():
     agent = Dagger(IT)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    dagger_results = T.test(iterations= 35,rounds = 1)
+    dagger_results = T.test()
     results.append(dagger_results)
     names.append('dagger_no_weight')
 

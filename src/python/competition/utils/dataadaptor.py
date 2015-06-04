@@ -18,7 +18,8 @@ def show(el):
     print
 
 def binary_labels(x):
-    return {
+
+    labels = dict( {
         25:0,
         -10:1,
         6:2,
@@ -33,7 +34,13 @@ def binary_labels(x):
         15:11,
         7:12,
         16:13
-    }[x]
+    })
+
+    if (x in labels):
+        return True 
+    else: 
+        return 1
+
 
 def asmbleObsv(pLevels,pActions,mario_state):
     obs = np.array([])
@@ -167,7 +174,7 @@ def extractObservation(data):
 
                 if(levelScene[i,j] != 0):
                     binFeat[binary_labels(levelScene[i,j])] = 1
-               
+
                 if(level_scene.shape[0] == 0):
                     level_scene = binFeat
                 else:
