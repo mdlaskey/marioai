@@ -50,7 +50,7 @@ def main():
     T = Tester(agent,exp)
     ahude_big_results = T.test()
     results.append(ahude_big_results)
-    names.append('ahude_1e-2')
+    names.append('ahude_1')
 
     # pickle.dump(results,open('results.p','wb'))
 
@@ -61,7 +61,7 @@ def main():
     T = Tester(agent,exp)
     ahude_med_results = T.test()
     results.append(ahude_med_results)
-    names.append('ahude_1e-4')
+    names.append('ahude_1e-1')
     
     # pickle.dump(results,open('results.p','wb'))
 
@@ -71,7 +71,7 @@ def main():
     T = Tester(agent,exp)
     ahude_small_results = T.test() 
     results.append(ahude_small_results)
-    names.append('ahude_1e-3')
+    names.append('ahude_1e-2')
     
  
     pickle.dump(results,open('results.p','wb'))
