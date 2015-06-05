@@ -13,7 +13,7 @@ class MarioEnvironment(TCPEnvironment):
     levelType = 0
     creaturesEnabled = True
     initMarioMode = 2
-    levelSeed = 3
+    levelSeed = 1
     levelLength = 4200
     timeLimit = 40
     fastTCP = False

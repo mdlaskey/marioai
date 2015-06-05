@@ -95,7 +95,7 @@ class Tester:
             avg_data = data+avg_data
             avg_distance = distances+avg_distance 
             avg_precision = precision+avg_precision
-            self.agent.learner.clearModel()
+          
             self.exp.task.env.changeLevel()
         
         num_ask_help = num_ask_help/rounds

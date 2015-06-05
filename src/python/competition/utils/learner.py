@@ -36,25 +36,23 @@ class Learner():
 
 	def trainModel(self,States,Action):
 		self.clf = svm.LinearSVC()
-		self.novel = svm.OneClassSVM()
+		self.novel = svm.LinearSVC()
 	
 		print States.shape
 		print Action.shape
 	
-		#self.scaler = preprocessing.StandardScaler().fit(States)
-		#States = self.scaler.transform(States)
+		#self.scaler = preprocessing.StandardScaler().fit(self.supStates)
+		#self.supStates = self.scaler.transform(self.supStates)
 		Action = np.ravel(Action)
 		
 		
 		self.clf.class_weight = 'auto'
 
-		self.novel.nu = 1e-3
-		self.novel.gamma = self.gamma
+		self.novel.C = self.gamma
+		#self.novel.gamma = self.gamma
 
 		self.clf.C = 1e-2
-		#self.clf.kernel = 'linear'
-		#self.clf.gamma = 100
-		#self.iter_ +=1  
+		
 
 		self.clf.fit(States,Action)
 
@@ -63,8 +61,26 @@ class Learner():
 	
 		
 		#self.kde = KernelDensity(kernel = 'gaussian', bandwidth=0.8).fit(States)
+		# IPython.embed()
+		# Size = self.supStates.shape 
+		# for i in range(Size[0]):
+		# 	for j in range(Size[1]):
+		# 		print i
+		# 		if(self.supStates[i,j] != 0 and self.supStates[i,j] != 1):
+		# 			print "Incorect", self.supStates[i,j]
+		# 			IPython.embed()
+
+		f_s = csr_matrix(np.zeros(self.supStates.shape))
+
+		Y_x = np.zeros([f_s.shape[0],1]) + 1
+		Y_f = np.zeros([f_s.shape[0],1]) - 1 
+
+		X = vstack((self.supStates,f_s))
+		Y = np.vstack((Y_x,Y_f))
+
+	
+		self.novel.fit(X,Y)
 		
-		#self.novel.fit(States)
 		if(self.verbose):
 			self.debugPolicy(States,Action)
 		#self.
@@ -115,8 +131,8 @@ class Learner():
 		#else: 
 			#return 1
 		
-		state = self.scaler.transform(state)
-		#state = csr_matrix(state)
+		# state = self.scaler.transform(state)
+		state = csr_matrix(state)
 		return self.novel.predict(state)
 
 	def getNumData(self): 
@@ -126,6 +142,7 @@ class Learner():
 		states = csr_matrix(states)
 
 		self.States = states
+		self.supStates = states 
 		self.Actions = actions
 		self.Weights = np.zeros(actions.shape)+1
 		self.trainModel(self.States,self.Actions)
@@ -140,6 +157,7 @@ class Learner():
 			self.trainModel(new_states,new_actions)
 		else:
 			self.States = vstack((self.States,new_states))
+			self.supStates = vstack((self.supStates,new_states))
 			self.Actions = np.vstack((self.Actions,new_actions))
 			self.Weights = np.vstack((self.Weights,weights))
 			self.trainModel(self.States,self.Actions)

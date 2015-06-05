@@ -5,6 +5,8 @@ __date__ = "$May 1, 2009 2:46:34 AM$"
 
 from marioagent import MarioAgent
 from utils.learner import Learner
+from scipy.sparse import csr_matrix
+from scipy.sparse import vstack
 import time 
 
 class Ahude(MarioAgent):
@@ -25,6 +27,8 @@ class Ahude(MarioAgent):
     trueJumpCounter = 0;
     trueSpeedCounter = 0;
     record_action = False; 
+    STATE_DIM = 27136 
+
 
     def getTraining(self):
         return self.initialTraining
@@ -43,7 +47,7 @@ class Ahude(MarioAgent):
         self.actionTaken = 0
         self.action = numpy.zeros(6, int)
         self.actions = numpy.array([0])
-        self.states  = numpy.zeros(489)
+        self.states  = csr_matrix(numpy.zeros([1,self.STATE_DIM]))
         self.actionStr = ""
         self.learner = Learner()
         self.count = 0; 
@@ -54,6 +58,7 @@ class Ahude(MarioAgent):
         self.off = False 
         self.prevMario = 0.0
         self.gamma = gamma 
+        self.iters = 0 
 
         
     def loadModel(self):
@@ -69,20 +74,20 @@ class Ahude(MarioAgent):
 #            return numpy.ones(5, int)
         #time.sleep(1)
        
-        if((self.initialTraining or self.learner.askForHelp(self.obsArray) == -1) and not self.off):
+        if((self.initialTraining or self.learner.askForHelp(self.obsArray.T) == -1) and not self.off):
             self.action = numpy.zeros(6,int)
             self.action[5] = 1
             #print "ASK FOR HELP",self.count
-            self.count += 0
+
             self.record_action = True; 
             self.askedHelp = True
             #print "ASKING FOR HELP"
             if(not self.initialTraining):
-                self.actionTaken = self.learner.getAction(self.obsArray)
+                self.actionTaken = self.learner.getAction(self.obsArray.T)
         else: 
             if(not self.off):
                 self.count += 1 
-            actInt = self.learner.getAction(self.obsArray)
+            actInt = self.learner.getAction(self.obsArray.T)
             self.askedHelp = False
             self.action = self.int2bin(actInt)
             self.actionTaken = actInt
@@ -106,16 +111,18 @@ class Ahude(MarioAgent):
 
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
-            if(self.off):
+            if(self.off or self.iters < 6):
+                self.iters += 1
                 return
             elif(self.initialTraining):
                 self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                self.states = numpy.vstack((self.states,self.obsArray))
+                self.obsArray = csr_matrix(self.obsArray)
+                self.states = vstack((self.states,self.obsArray.T))
             elif(self.record_action and self.prevMario != self.marioFloats[0]): 
                 if((self.actionTaken != action)):
                     self.prevMario = self.marioFloats[0]
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                    self.states = numpy.vstack((self.states,self.obsArray))
+                    self.states = numpy.vstack((self.states,self.obsArray.T))
                     if(action == 26 or action == 10):
                         weight = 2
                     else: 
@@ -155,8 +162,9 @@ class Ahude(MarioAgent):
         
     def reset(self):
         self.actions = numpy.array([0])
-        self.states  = numpy.zeros(489)
+        self.states  = numpy.zeros([1,self.STATE_DIM])
         self.weight = numpy.zeros(1)
+        self.iters = 0
         
     def printLevelScene(self):
         ret = ""

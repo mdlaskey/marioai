@@ -45,33 +45,33 @@ def main():
 
     
     # # # #test big ahude
-    # agent = Ahude(IT,f,gamma = 1e-2)
-    # exp = EpisodicExperiment(task, agent) 
-    # T = Tester(agent,exp)
-    # ahude_big_results = T.test()
-    # results.append(ahude_big_results)
-    # names.append('ahude_1e-2')
+    agent = Ahude(IT,f,gamma = 1)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    ahude_big_results = T.test()
+    results.append(ahude_big_results)
+    names.append('ahude_1e-2')
 
     # pickle.dump(results,open('results.p','wb'))
 
 
     # # #test med ahude
-    # agent = Ahude(IT,f,gamma = 1e-4)
-    # exp = EpisodicExperiment(task, agent) 
-    # T = Tester(agent,exp)
-    # ahude_med_results = T.test()
-    # results.append(ahude_med_results)
-    # names.append('ahude_1e-4')
+    agent = Ahude(IT,f,gamma = 1e-1)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    ahude_med_results = T.test()
+    results.append(ahude_med_results)
+    names.append('ahude_1e-4')
     
     # pickle.dump(results,open('results.p','wb'))
 
     # # #test small ahude 
-    # agent = Ahude(IT,f,gamma = 1e-3)
-    # exp = EpisodicExperiment(task, agent) 
-    # T = Tester(agent,exp)
-    # ahude_small_results = T.test() 
-    # results.append(ahude_small_results)
-    # names.append('ahude_1e-3')
+    agent = Ahude(IT,f,gamma = 1e-2)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    ahude_small_results = T.test() 
+    results.append(ahude_small_results)
+    names.append('ahude_1e-3')
     
  
     pickle.dump(results,open('results.p','wb'))
