@@ -11,6 +11,7 @@ from sklearn import metrics
 from scipy.sparse import csr_matrix
 from scipy.sparse import vstack
 
+
 class Learner():
 
 	verbose = True
@@ -36,7 +37,7 @@ class Learner():
 
 	def trainModel(self,States,Action):
 		self.clf = svm.LinearSVC()
-		self.novel = svm.LinearSVC()
+		self.novel = svm.OneClassSVM()
 	
 		print States.shape
 		print Action.shape
@@ -48,14 +49,13 @@ class Learner():
 		
 		self.clf.class_weight = 'auto'
 
-		self.novel.C = self.gamma
-		#self.novel.gamma = self.gamma
+		self.novel.gamma = self.gamma
 
 		self.clf.C = 1e-2
 		
 
 		self.clf.fit(States,Action)
-
+		self.supStates = preprocessing.normalize(self.supStates,norm='l2')
 
 		#SVM parameters computed via cross validation
 	
@@ -70,16 +70,11 @@ class Learner():
 		# 			print "Incorect", self.supStates[i,j]
 		# 			IPython.embed()
 
-		f_s = csr_matrix(np.zeros(self.supStates.shape))
-
-		Y_x = np.zeros([f_s.shape[0],1]) + 1
-		Y_f = np.zeros([f_s.shape[0],1]) - 1 
-
-		X = vstack((self.supStates,f_s))
-		Y = np.vstack((Y_x,Y_f))
-
+		self.novel.nu = 1e-3
+		self.novel.verbose = True
+		self.novel.max_iter = 2000
 	
-		self.novel.fit(X,Y)
+		self.novel.fit(self.supStates)
 		
 		if(self.verbose):
 			self.debugPolicy(States,Action)
