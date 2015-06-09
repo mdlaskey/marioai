@@ -32,9 +32,8 @@ def main():
     task.env.levelDifficulty = 1
 
     results = [] 
-    names = ['dagger','ahude_1','ahude_1e-1','ahude_1e-2'] 
+    names = [] 
 
-    results = pickle.load(open('results.p','rb'))
     
     # #test dagger
     agent = Dagger(IT)
@@ -47,33 +46,33 @@ def main():
 
     
     # # # # #test big ahude
-    agent = Ahude(IT,f,gamma = 1e-1)
+    agent = Ahude(IT,f,gamma = 1e-2)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    ahude_big_results = T.test()
+    ahude_big_results = T.test(rounds =1)
     results.append(ahude_big_results)
-    names.append('ahude_1e-1')
+    names.append('ahude_1e-2')
 
     pickle.dump(results,open('results.p','wb'))
 
 
-    # # #test med ahude
-    agent = Ahude(IT,f,gamma = 1e-2)
+    # # # #test med ahude
+    agent = Ahude(IT,f,gamma = 1e-3)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
     ahude_med_results = T.test()
     results.append(ahude_med_results)
-    names.append('ahude_1e-2')
+    names.append('ahude_1e-3')
     
     pickle.dump(results,open('results.p','wb'))
 
-    # # #test small ahude 
-    agent = Ahude(IT,f,gamma = 1e-3)
+    # # # #test small ahude 
+    agent = Ahude(IT,f,gamma = 1e-4)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
     ahude_small_results = T.test() 
     results.append(ahude_small_results)
-    names.append('ahude_1e-3')
+    names.append('ahude_1e-4')
     
  
     pickle.dump(results,open('results.p','wb'))
@@ -95,7 +94,7 @@ def main():
     for i in range(1,len(results)):
         plt.plot(results[i][3])
 
-    plt.legend(names[1:4],loc='upper left')
+    plt.legend(names,loc='upper left')
 
 
     plt.show()

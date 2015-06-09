@@ -42,8 +42,8 @@ class Learner():
 		print States.shape
 		print Action.shape
 	
-		#self.scaler = preprocessing.StandardScaler().fit(self.supStates)
-		#self.supStates = self.scaler.transform(self.supStates)
+		# self.scaler = preprocessing.StandardScaler(with_mean = False).fit(self.States)
+		# self.States = self.scaler.transform(self.States)
 		Action = np.ravel(Action)
 		
 		
@@ -55,8 +55,6 @@ class Learner():
 		
 
 		self.clf.fit(States,Action)
-		self.supStates = preprocessing.normalize(self.supStates,norm='l2')
-
 		#SVM parameters computed via cross validation
 	
 		
@@ -72,8 +70,9 @@ class Learner():
 
 		self.novel.nu = 1e-3
 		self.novel.verbose = True
-		self.novel.max_iter = 2000
-	
+		self.novel.max_iter = 3000
+		
+
 		self.novel.fit(self.supStates)
 		
 		if(self.verbose):
@@ -127,7 +126,9 @@ class Learner():
 			#return 1
 		
 		# state = self.scaler.transform(state)
-		state = csr_matrix(state)
+		if(isinstance(state,csr_matrix)):
+			state = state.todense()
+		#state = preprocessing.normalize(state,norm='l2')
 		return self.novel.predict(state)
 
 	def getNumData(self): 
@@ -137,7 +138,7 @@ class Learner():
 		states = csr_matrix(states)
 
 		self.States = states
-		self.supStates = states 
+		self.supStates = states.todense() 
 		self.Actions = actions
 		self.Weights = np.zeros(actions.shape)+1
 		self.trainModel(self.States,self.Actions)
@@ -152,7 +153,7 @@ class Learner():
 			self.trainModel(new_states,new_actions)
 		else:
 			self.States = vstack((self.States,new_states))
-			self.supStates = vstack((self.supStates,new_states))
+			self.supStates = np.vstack((self.supStates,new_states.todense()))
 			self.Actions = np.vstack((self.Actions,new_actions))
 			self.Weights = np.vstack((self.Weights,weights))
 			self.trainModel(self.States,self.Actions)
