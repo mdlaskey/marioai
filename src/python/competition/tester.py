@@ -68,8 +68,8 @@ class Tester:
                 
                 rewards = self.exp.doEpisodes(1)
                 
-               
-               
+                size = len(rewards[0])
+                data[t] = rewards[0][size-1]
                 self.agent.updateModel()
                
 
@@ -84,7 +84,7 @@ class Tester:
                
                     
                 distances[t] = rewards[0][size-1]
-                data[t] = self.agent.getDataAdded()
+               
                 precision[t] = self.agent.learner.getPrecision()
                 self.agent.reset()
              

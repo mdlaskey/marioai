@@ -42,8 +42,6 @@ class Learner():
 		print States.shape
 		print Action.shape
 	
-		# self.scaler = preprocessing.StandardScaler(with_mean = False).fit(self.States)
-		# self.States = self.scaler.transform(self.States)
 		Action = np.ravel(Action)
 		
 		
@@ -69,11 +67,13 @@ class Learner():
 		# 			IPython.embed()
 
 		self.novel.nu = 1e-3
+		self.novel.kernel = 'rbf'
 		self.novel.verbose = True
 		self.novel.max_iter = 3000
 		
 
 		self.novel.fit(self.supStates)
+		print self.novel.gamma
 		
 		if(self.verbose):
 			self.debugPolicy(States,Action)
@@ -125,9 +125,9 @@ class Learner():
 		#else: 
 			#return 1
 		
-		# state = self.scaler.transform(state)
 		if(isinstance(state,csr_matrix)):
 			state = state.todense()
+
 		#state = preprocessing.normalize(state,norm='l2')
 		return self.novel.predict(state)
 
