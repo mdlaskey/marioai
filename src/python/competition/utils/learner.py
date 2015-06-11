@@ -68,7 +68,8 @@ class Learner():
 
 		self.novel.nu = 1e-3
 		self.novel.kernel = 'rbf'
-		self.novel.verbose = True
+		self.novel.verbose = False
+		self.novel.shrinking = False
 		self.novel.max_iter = 3000
 		
 
