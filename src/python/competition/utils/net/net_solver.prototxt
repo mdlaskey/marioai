@@ -1,0 +1,19 @@
+// Location of train/test prototxt file
+net: "/home/wesley/Desktop/marioai/src/python/competition/utils/net/net_train_test.prototxt"
+
+test_iter: 25
+test_interval: 100
+base_lr: 0.01
+lr_policy: "step"
+gamma: 0.1
+stepsize: 500
+display: 100
+max_iter: 1000
+momentum: 0.9
+weight_decay: 0.0005
+
+// Number of iterations before snapshot of model is created
+snapshot: 1000
+
+// Switch to GPU for GPU mode
+solver_mode: CPU
