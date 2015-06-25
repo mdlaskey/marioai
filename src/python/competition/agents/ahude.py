@@ -44,6 +44,7 @@ class Ahude(MarioAgent):
         self.trueSpeedCounter = 0
         self.weight = numpy.zeros(1)
         self.initialTraining = initialTraining
+        self.labelState = labelState
         self.actionTaken = 0
         self.action = numpy.zeros(6, int)
         self.actions = numpy.array([0])
