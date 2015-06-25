@@ -35,7 +35,7 @@ class Dagger(MarioAgent):
         self.trueJumpCounter = 0;
         self.trueSpeedCounter = 0;
         
-    def __init__(self,initialTraining,options = False):
+    def __init__(self,initialTraining,useKMM = False):
         """Constructor"""
         self.trueJumpCounter = 0
         self.trueSpeedCounter = 0
@@ -48,7 +48,7 @@ class Dagger(MarioAgent):
         self.states  = csr_matrix(numpy.zeros([1,self.STATE_DIM]))
         self.actionStr = ""
         self.learner = Learner()
-        self.learner.option_1 = options
+        self.learner.useKMM = useKMM
         self.count = 0; 
         self.prevMario = 0.0
       
@@ -93,15 +93,13 @@ class Dagger(MarioAgent):
                     self.obsArray = csr_matrix(self.obsArray)
                     self.states = vstack((self.states,self.obsArray.T))
                 elif(self.record_action and self.prevMario != self.marioFloats[0]): 
+                    obsArray_csr = csr_matrix(self.obsArray)
+                    self.kmm_state = vstack((self.kmm_state,obsArray_csr.T))
                     if((self.actionTaken != action)):
                         self.prevMario = self.marioFloats[0]
                         self.actions = numpy.vstack((self.actions,numpy.array([action])))
                         self.states = numpy.vstack((self.states,self.obsArray.T))
-                        if(action == 26 or action == 10):
-                            weight = 2
-                        else: 
-                            weight = 1 
-                        self.weight = numpy.vstack((self.weight,weight))
+                    
             self.count += 1
             #self.printLevelScene()
     def int2bin(self,num):
@@ -116,7 +114,7 @@ class Dagger(MarioAgent):
         print self.states
         print self.actions 
 
-        self.learner.updateModel(self.states,self.actions,self.weight)
+        self.learner.updateModel(self.states,self.actions,self.kmm_state)
         self.dataAdded = self.actions.shape[0]
 
     def getDataAdded(self):
@@ -137,6 +135,7 @@ class Dagger(MarioAgent):
     def reset(self):
         self.actions = numpy.array([0])
         self.states  = numpy.zeros([1,self.STATE_DIM])
+        self.kmm_state = numpy.zeros([1,self.STATE_DIM])
         self.weight = numpy.zeros(1)
         self.count = 0
 

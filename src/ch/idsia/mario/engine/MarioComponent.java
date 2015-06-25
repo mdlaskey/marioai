@@ -156,7 +156,7 @@ public class MarioComponent extends JComponent implements Runnable, /*KeyListene
 
         while (/*Thread.currentThread() == animator*/ running) {
             // Display the next frame of animation.
-//                repaint();
+//                repaint();            
             scene.tick();
             if (gameViewer != null && gameViewer.getContinuousUpdatesState())
                 gameViewer.tick();
@@ -243,6 +243,7 @@ public class MarioComponent extends JComponent implements Runnable, /*KeyListene
                 } else {
                     g.drawImage(image, 0, 0, null);
                 }
+               
             } else {
                 // Win or Die without renderer!! independently.
                 marioStatus = ((LevelScene) scene).mario.getStatus();

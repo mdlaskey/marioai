@@ -51,7 +51,7 @@ class Tester:
         for r in range(rounds):
 
             self.agent.initialTraining = True
-            self.exp.doEpisodes(2)
+            self.exp.doEpisodes(1)
             self.agent.newModel()
             self.agent.saveModel()
             self.agent.initialTraining = False 

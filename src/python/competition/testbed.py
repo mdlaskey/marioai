@@ -33,36 +33,36 @@ def main():
 
     results = [] 
     names = [] 
-    results = pickle.load(open('results.p','rb'))
+
     
     # # #test dagger
-    agent = Dagger(IT)
-    exp = EpisodicExperiment(task, agent) 
-    T = Tester(agent,exp)
-    dagger_results = T.test()
-    results.append(dagger_results)
-    names.append('dagger_no_weight')
+    # agent = Dagger(IT,useKMM = True)
+    # exp = EpisodicExperiment(task, agent) 
+    # T = Tester(agent,exp)
+    # dagger_results = T.test(rounds = 1)
+    # results.append(dagger_results)
+    # names.append('dagger_no_weight')
 
 
     
     # # # # # #test big ahude
-    # agent = Ahude(IT,f,gamma = 1e-1)
-    # exp = EpisodicExperiment(task, agent) 
-    # T = Tester(agent,exp)
-    # ahude_big_results = T.test()
-    # results.append(ahude_big_results)
-    # names.append('ahude_1e-1')
+    agent = Ahude(IT,f,gamma = 1e-2)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    ahude_big_results = T.test()
+    results.append(ahude_big_results)
+    names.append('ahude_1e-1')
 
     # pickle.dump(results,open('results.p','wb'))
 
 
     # # # # # #test med ahude
-    # agent = Ahude(IT,f,gamma = 1e-2)
-    # exp = EpisodicExperiment(task, agent) 
-    # T = Tester(agent,exp)
-    # ahude_med_results = T.test()
-    # results.append(ahude_med_results)
-    # names.append('ahude_1e-2')
+    agent = Ahude(IT,f,gamma = 1e-2,labelState = False)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    ahude_med_results = T.test(rounds = 1)
+    results.append(ahude_med_results)
+    names.append('ahude_1e-2')
     
     # # # pickle.dump(results,open('results.p','wb'))
 

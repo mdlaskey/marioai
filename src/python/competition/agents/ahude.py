@@ -37,7 +37,7 @@ class Ahude(MarioAgent):
         self.trueJumpCounter = 0;
         self.trueSpeedCounter = 0;
         
-    def __init__(self,initialTraining,fl,gamma=1e-3):
+    def __init__(self,initialTraining,fl,gamma=1e-3,labelState= True):
         """Constructor"""
         self.file = fl
         self.trueJumpCounter = 0
@@ -92,10 +92,7 @@ class Ahude(MarioAgent):
             self.action = self.int2bin(actInt)
             self.actionTaken = actInt
             #print "ACTION TAKEN", actInt," ",self.action
-            if(self.notComplete):
-                self.record_action = True; 
-            else: 
-                self.record_action = True; 
+            self.record_action = self.labelState
 
         return self.action
     def getNumHelp(self): 

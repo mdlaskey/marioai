@@ -10,12 +10,13 @@ from sklearn import linear_model
 from sklearn import metrics 
 from scipy.sparse import csr_matrix
 from scipy.sparse import vstack
+from KMM import KMM
 
 
 class Learner():
 
 	verbose = True
-	option_1 = False 
+	useKMM = False 
 	gamma = 1e-3
 	gamma_clf = 1e-3
 	first_time = True 
@@ -50,12 +51,22 @@ class Learner():
 		self.novel.gamma = self.gamma
 
 		self.clf.C = 1e-2
+		#self.clf.kernel = 'linear'
 		
-
-		self.clf.fit(States,Action)
+		if(self.useKMM):
+			self.Weights = np.ravel(self.Weights)
+			self.clf.fit(States,Action,self.Weights)
+		else:
+			self.clf.fit(States,Action)
 		#SVM parameters computed via cross validation
 	
+		if(self.verbose):
+			errors = self.debugPolicy(States,Action)
+
 		
+		mask = np.ones(self.supStates.shape[0],dtype=bool)
+		mask[errors] = False
+		supStatesClean = self.supStates[mask]
 		#self.kde = KernelDensity(kernel = 'gaussian', bandwidth=0.8).fit(States)
 		# IPython.embed()
 		# Size = self.supStates.shape 
@@ -73,11 +84,10 @@ class Learner():
 		self.novel.max_iter = 3000
 		
 
-		self.novel.fit(self.supStates)
+		self.novel.fit(supStatesClean)
 		print self.novel.gamma
 		
-		if(self.verbose):
-			self.debugPolicy(States,Action)
+		
 		#self.
 		#IPython.embed()
 		#IPython.embed()
@@ -96,6 +106,7 @@ class Learner():
 	def debugPolicy(self,States,Action):
 		prediction = self.clf.predict(States)
 		classes = dict()
+		errors = []
 
 		for i in range(self.getNumData()):
 			if(Action[i] not in classes):
@@ -105,11 +116,15 @@ class Learner():
 			if(Action[i] != prediction[i]):
 				classes[Action[i]][1] += 1
 
+				errors.append(i)
+
 			classes[Action[i]][2] = classes[Action[i]][1]/classes[Action[i]][0] 
 		for d in classes:
 			print d, classes[d]
 
 		self.precision = self.clf.score(States,Action)
+
+		return errors
 
 	def getPrecision(self):
 		return self.precision
@@ -144,20 +159,26 @@ class Learner():
 		self.Weights = np.zeros(actions.shape)+1
 		self.trainModel(self.States,self.Actions)
 
-	def updateModel(self,new_states,new_actions,weights):
+	def updateModel(self,new_states,new_actions,kmm_state):
 		print "UPDATING MODEL"
 
 		#self.States = new_states
 		#self.Actions = new_actions
 		new_states = csr_matrix(new_states)
-		if(self.option_1):
-			self.trainModel(new_states,new_actions)
-		else:
-			self.States = vstack((self.States,new_states))
-			self.supStates = np.vstack((self.supStates,new_states.todense()))
-			self.Actions = np.vstack((self.Actions,new_actions))
-			self.Weights = np.vstack((self.Weights,weights))
-			self.trainModel(self.States,self.Actions)
+		self.States = vstack((self.States,new_states))
+		
+
+		if(self.useKMM):
+			kmm = KMM()
+			kmm.assembleKernel(self.States,kmm_state)
+			self.Weights = kmm.solveQP()
+			self.Weights =  np.zeros((self.Weights.shape[0],1))+self.Weights
+
+
+		
+		self.supStates = np.vstack((self.supStates,new_states.todense()))
+		self.Actions = np.vstack((self.Actions,new_actions))
+		self.trainModel(self.States,self.Actions)
 
 	def saveModel(self):
 		pickle.dump(self.States,open('states.p','wb'))
