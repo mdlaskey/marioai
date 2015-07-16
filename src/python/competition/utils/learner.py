@@ -13,7 +13,7 @@ from scipy.sparse import vstack
 
 import sys
 
-# Make sure that caffe is on the python path:
+# Caffe
 sys.path.append('/home/wesley/caffe/python')
 
 import caffe
@@ -24,6 +24,10 @@ import tempfile
 
 import random
 
+# AHQP
+sys.path.append('/home/wesley/Desktop/marioai/src/python/competition/utils/tools')
+
+from AHQP import AHQP
 
 class Learner():
 	verbose = False
@@ -34,7 +38,8 @@ class Learner():
 	iter_ = 1
 
 	# Neural net implementation
-	neural = True
+	neural = False
+	AHQP = True
 
 	# Assumes current directory is "marioai/src/python/competition"
 	NET_SUBDIR = os.getcwd() + '/utils/net/'
@@ -122,6 +127,7 @@ class Learner():
 			caffe.set_mode_cpu()
 			solver = caffe.get_solver(self.SOLVER_FILE)
 			solver.solve()
+
 		else:
 			# Original SVC implementation
 			self.clf = svm.LinearSVC()
@@ -129,20 +135,25 @@ class Learner():
 			self.clf.C = 1e-2
 			self.clf.fit(States, Action)
 
-		# Original novel implementation
-		self.novel = svm.OneClassSVM()
+			# Original novel implementation
+			self.novel = svm.OneClassSVM()
 
-		self.novel.gamma = self.gamma
-		self.novel.nu = 1e-3
-		self.novel.kernel = 'rbf'
-		self.novel.verbose = False
-		self.novel.shrinking = False
-		self.novel.max_iter = 3000
+			self.novel.gamma = self.gamma
+			self.novel.nu = 1e-3
+			self.novel.kernel = 'rbf'
+			self.novel.verbose = False
+			self.novel.shrinking = False
+			self.novel.max_iter = 3000
 
-		self.novel.fit(self.supStates)
+			self.novel.fit(self.supStates)
 
-		if (self.verbose):
-			self.debugPolicy(States, Action)
+			if (self.verbose or self.AHQP):
+				self.debugPolicy(States, Action)
+
+			if self.AHQP:
+				self.ahqp_solver = AHQP()
+				self.ahqp_solver.assembleKernelSparse(States.toarray(), self.labels)
+				self.ahqp_solver.solveQP()
 		# self.
 		# IPython.embed()
 		# IPython.embed()
@@ -169,7 +180,7 @@ class Learner():
 	def debugPolicy(self, States, Action):
 		prediction = self.clf.predict(States)
 		classes = dict()
-
+		self.labels = np.zeros(self.getNumData())
 		for i in range(self.getNumData()):
 			if (Action[i] not in classes):
 				value = np.zeros(3)
@@ -177,6 +188,9 @@ class Learner():
 			classes[Action[i]][0] += 1
 			if (Action[i] != prediction[i]):
 				classes[Action[i]][1] += 1
+				self.labels[i] = -1.0
+			else:
+				self.labels[i] = 1.0
 			classes[Action[i]][2] = classes[Action[i]][1] / classes[Action[i]][0]
 		for d in classes:
 			print d, classes[d]
@@ -184,6 +198,10 @@ class Learner():
 		self.precision = self.clf.score(States, Action)
 
 	def getPrecision(self):
+		"""
+		Precision is set to 1 for neural net model.
+		"""
+		
 		if self.neural:
 			return 1
 		else:
