@@ -9,6 +9,7 @@ from agents.forwardagent import ForwardAgent
 from agents.forwardrandomagent import ForwardRandomAgent
 from agents.ahude import Ahude
 from agents.dagger import Dagger 
+from agents.sheath import Sheath
 import IPython
 import matplotlib.pyplot as plt
 import numpy as np
@@ -36,35 +37,77 @@ def main():
 
     
     # # #test dagger
-    # agent = Dagger(IT,useKMM = True)
-    # exp = EpisodicExperiment(task, agent) 
-    # T = Tester(agent,exp)
-    # dagger_results = T.test(rounds = 1)
-    # results.append(dagger_results)
-    # names.append('dagger_no_weight')
+
+    agent = Dagger(IT,useKMM = False)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    dagger_results = T.test(rounds = 10,iterations = 35)
+    results.append(dagger_results)
+    names.append('dagger')
+    pickle.dump(results,open('results.p','wb'))
+
+
+
+    agent = Sheath(IT,useKMM = False,sigma = 1.0)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    dagger_results = T.test(rounds = 10,iterations = 35)
+    results.append(dagger_results)
+    names.append('sheath_1')
+    pickle.dump(results,open('results.p','wb'))
+
+    agent = Sheath(IT,useKMM = False,sigma = 1e-1)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    dagger_results = T.test(rounds = 10,iterations = 35)
+    results.append(dagger_results)
+    names.append('sheath_1')
+    pickle.dump(results,open('results.p','wb'))
 
 
     
-    # # # # # #test big ahude
-    agent = Ahude(IT,f,gamma = 1e-2)
+    agent = Sheath(IT,useKMM = False,sigma = 0.5)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    ahude_big_results = T.test()
-    results.append(ahude_big_results)
-    names.append('ahude_1e-1')
+    dagger_results = T.test(rounds = 10,iterations = 35)
+    results.append(dagger_results)
+    names.append('sheath_1')
+
+    pickle.dump(results,open('results.p','wb'))
+    # agent = Sheath(IT,useKMM = False,sigma = 1e-1)
+    # exp = EpisodicExperiment(task, agent) 
+    # T = Tester(agent,exp)
+    # dagger_results = T.test(rounds = 4,iterations = 35)
+    # results.append(dagger_results)
+    # names.append('sheath_1')
+    
+
+    # agent = Sheath(IT,useKMM = False,sigma = 1e-2)
+    # exp = EpisodicExperiment(task, agent) 
+    # T = Tester(agent,exp)
+    # dagger_results = T.test(rounds = 4,iterations = 35)
+    # results.append(dagger_results)
+    # names.append('sheath_1')
+    # # # # # #test big ahude
+    # agent = Ahude(IT,f,gamma = 1e-2,labelState = True, useKMM = True)
+    # exp = EpisodicExperiment(task, agent) 
+    # T = Tester(agent,exp)
+    # ahude_big_results = T.test(rounds = 3)
+    # results.append(ahude_big_results)
+    # names.append('ahude_1e-1')
 
     # pickle.dump(results,open('results.p','wb'))
 
 
     # # # # # #test med ahude
-    agent = Ahude(IT,f,gamma = 1e-2,labelState = False)
-    exp = EpisodicExperiment(task, agent) 
-    T = Tester(agent,exp)
-    ahude_med_results = T.test(rounds = 1)
-    results.append(ahude_med_results)
-    names.append('ahude_1e-2')
+    # agent = Ahude(IT,f,gamma = 1e-2,labelState = False,useKMM = True)
+    # exp = EpisodicExperiment(task, agent) 
+    # T = Tester(agent,exp)
+    # ahude_med_results = T.test(rounds = 3)
+    # results.append(ahude_med_results)
+    # names.append('ahude_1e-2')
     
-    # # # pickle.dump(results,open('results.p','wb'))
+    # # #
 
     # # # # # # #test small ahude 
     # agent = Ahude(IT,f,gamma = 1e-3)
@@ -76,25 +119,26 @@ def main():
     
  
     # pickle.dump(results,open('results.p','wb'))
+    IPython.embed()
 
     plt.figure(1)
     for i in range(len(results)):
-        plt.plot(results[i][1])
+        plt.plot(results[i][5],results[i][1])
     
     
     plt.legend(names,loc='upper left')
 
-    plt.figure(2)
-    for i in range(len(results)):
-        plt.plot(results[i][0])
+    # plt.figure(2)
+    # for i in range(len(results)):
+    #     plt.plot(results[i][0])
 
-    plt.legend(names,loc='upper left')
+    # plt.legend(names,loc='upper left')
 
-    plt.figure(3)
-    for i in range(0,len(results)):
-        plt.plot(results[i][3])
+    # plt.figure(3)
+    # for i in range(0,len(results)):
+    #     plt.plot(results[i][3])
 
-    plt.legend(names,loc='upper left')
+    # plt.legend(names,loc='upper left')
 
 
     plt.show()

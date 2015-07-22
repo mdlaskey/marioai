@@ -37,7 +37,7 @@ class Ahude(MarioAgent):
         self.trueJumpCounter = 0;
         self.trueSpeedCounter = 0;
         
-    def __init__(self,initialTraining,fl,gamma=1e-3,labelState= True):
+    def __init__(self,initialTraining,fl,gamma=1e-3,labelState= True,useKMM = False):
         """Constructor"""
         self.file = fl
         self.trueJumpCounter = 0
@@ -56,6 +56,7 @@ class Ahude(MarioAgent):
         self.countLean = 0.0
         self.notComplete = True; 
         self.askedHelp = False; 
+        self.learner.useKMM = useKMM
         self.off = False 
         self.prevMario = 0.0
         self.gamma = gamma 
@@ -116,17 +117,14 @@ class Ahude(MarioAgent):
                 self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 self.obsArray = csr_matrix(self.obsArray)
                 self.states = vstack((self.states,self.obsArray.T))
-            elif(self.record_action and self.prevMario != self.marioFloats[0]): 
+            elif(self.record_action and self.prevMario != self.marioFloats[0]):
+                obsArray_csr = csr_matrix(self.obsArray)
+                self.kmm_state = vstack((self.kmm_state,obsArray_csr.T)) 
                 if((self.actionTaken != action)):
                     self.prevMario = self.marioFloats[0]
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
                     self.states = numpy.vstack((self.states,self.obsArray.T))
-                    if(action == 26 or action == 10):
-                        weight = 2
-                    else: 
-                        weight = 1 
-                    self.weight = numpy.vstack((self.weight,weight))
-
+                    
 
             #self.printLevelScene()
     def int2bin(self,num):
@@ -138,7 +136,7 @@ class Ahude(MarioAgent):
         return action 
 
     def updateModel(self):
-        self.learner.updateModel(self.states,self.actions,self.weight)
+        self.learner.updateModel(self.states,self.actions,self.kmm_state)
         self.dataAdded = self.actions.shape[0]
     
 
@@ -161,6 +159,7 @@ class Ahude(MarioAgent):
     def reset(self):
         self.actions = numpy.array([0])
         self.states  = numpy.zeros([1,self.STATE_DIM])
+        self.kmm_state = numpy.zeros([1,self.STATE_DIM])
         self.weight = numpy.zeros(1)
         self.iters = 0
         

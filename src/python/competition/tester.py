@@ -44,6 +44,7 @@ class Tester:
         avg_data = np.zeros(iterations) 
         avg_distance = np.zeros(iterations)
         avg_precision = np.zeros(iterations)
+        avg_human_input = np.zeros(iterations)
         
         
 
@@ -64,6 +65,7 @@ class Tester:
             data = np.zeros(iterations)
             num_help = np.zeros(iterations)
             precision = np.zeros(iterations)
+            human_input = np.zeros(iterations)
             for t in range(iterations):
                 
                 rewards = self.exp.doEpisodes(1)
@@ -86,6 +88,7 @@ class Tester:
                 distances[t] = rewards[0][size-1]
                
                 precision[t] = self.agent.learner.getPrecision()
+                human_input[t] = self.agent.getNumHumanInput()
                 self.agent.reset()
              
             if(self.agent._getName() == 'Ahude'):
@@ -95,6 +98,7 @@ class Tester:
             avg_data = data+avg_data
             avg_distance = distances+avg_distance 
             avg_precision = precision+avg_precision
+            avg_human_input = avg_human_input + human_input
           
             self.exp.task.env.changeLevel()
         
@@ -103,10 +107,11 @@ class Tester:
         avg_data = avg_data/rounds
         avg_distance = avg_distance/rounds 
         avg_precision = avg_precision/rounds 
+        avg_human_input = avg_human_input/rounds
         self.exp.task.env.setLevelBack()
         
 
-        return avg_data,avg_distance,num_mismatch,num_ask_help,avg_precision 
+        return avg_data,avg_distance,num_mismatch,num_ask_help,avg_precision,avg_human_input
 
              
              

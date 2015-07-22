@@ -11,7 +11,7 @@ from sklearn import metrics
 from scipy.sparse import csr_matrix
 from scipy.sparse import vstack
 from KMM import KMM
-
+from AHQP import AHQP
 import sys
 
 
@@ -26,8 +26,10 @@ class Learner():
 	gamma_clf = 1e-3
 	first_time = False
 	iter_ = 1
-
+	use_AHQP = True
 	
+	def __init__(self,sigma=1.0):
+		self.ahqp_solver = AHQP(sigma)
 
 	def Load(self, gamma=1e-3):
 		self.States = pickle.load(open('states.p', 'rb'))
@@ -104,6 +106,7 @@ class Learner():
 		self.clf = svm.LinearSVC()
 		self.novel = svm.OneClassSVM()
 		self.clf.C = 1e-2
+
 		#self.clf.kernel = 'linear'
 		
 		if(self.useKMM):
@@ -113,29 +116,28 @@ class Learner():
 			self.clf.fit(States,Action)
 		#SVM parameters computed via cross validation
 	
-		if(self.verbose):
-			errors = self.debugPolicy(States,Action)
-
-		
-		mask = np.ones(self.supStates.shape[0],dtype=bool)
-		mask[errors] = False
-		supStatesClean = self.supStates[mask]
-
-		self.novel.gamma = self.gamma
-		self.novel.nu = 1e-3
-		self.novel.kernel = 'rbf'
-		self.novel.verbose = False
-		self.novel.shrinking = False
-		self.novel.max_iter = 3000
+	
+		# self.novel.gamma = self.gamma
+		# self.novel.nu = 1e-3
+		# self.novel.kernel = 'rbf'
+		# self.novel.verbose = False
+		# self.novel.shrinking = False
+		# self.novel.max_iter = 3000
 
 
-		self.novel.fit(supStatesClean)
+		# self.novel.fit(supStatesClean)
 
 
-		if (self.verbose):
+		if (self.verbose or self.use_AHQP):
 			self.debugPolicy(States, Action)
+
+
+		if self.use_AHQP:
+			
+			self.ahqp_solver.assembleKernelSparse(States, self.labels)
+			self.ahqp_solver.solveQP()
+	
 		# self.
-		# IPython.embed()
 		# IPython.embed()
 
 	def getScoreNovel(self, States):
@@ -158,10 +160,10 @@ class Learner():
 		return avg
 
 	def debugPolicy(self, States, Action):
+	
 		prediction = self.clf.predict(States)
 		classes = dict()
-		errors = []
-
+		self.labels = np.zeros(self.getNumData())
 		for i in range(self.getNumData()):
 			if (Action[i] not in classes):
 				value = np.zeros(3)
@@ -169,17 +171,14 @@ class Learner():
 			classes[Action[i]][0] += 1
 			if (Action[i] != prediction[i]):
 				classes[Action[i]][1] += 1
-
-				errors.append(i)
-
-			classes[Action[i]][2] = classes[Action[i]][1]/classes[Action[i]][0] 
-
+				self.labels[i] = -1.0
+			else:
+				self.labels[i] = 1.0
+			classes[Action[i]][2] = classes[Action[i]][1] / classes[Action[i]][0]
 		for d in classes:
 			print d, classes[d]
 
 		self.precision = self.clf.score(States, Action)
-
-		return errors
 
 	def getPrecision(self):
 		return self.precision
@@ -214,28 +213,15 @@ class Learner():
 		# return 1
 
 		# state = self.scaler.transform(state)
-		if (isinstance(state, csr_matrix)):
-			state = state.todense()
+		
 		# state = preprocessing.normalize(state,norm='l2')
-		return self.precision
+		return self.ahqp_solver.predict(csr_matrix(state))
 
  	def getAction(self,state):
  		state = csr_matrix(state)
 		return self.clf.predict(state)
 
-	def askForHelp(self,state):
-		#IPython.embed()
-		#if(abs(state[1]) > 80  and abs(state[2]) == 0):
-			#IPython.embed() 
-			#return -1
-		#else: 
-			#return 1
-		
-		if(isinstance(state,csr_matrix)):
-			state = state.todense()
-
-		#state = preprocessing.normalize(state,norm='l2')
-		return self.novel.predict(state)
+	
 
 	def getNumData(self):
 		return self.Actions.shape[0]

@@ -50,6 +50,7 @@ class Dagger(MarioAgent):
         self.learner = Learner()
         self.learner.useKMM = useKMM
         self.count = 0; 
+        self.human_input = 0; 
         self.prevMario = 0.0
       
         
@@ -74,6 +75,7 @@ class Dagger(MarioAgent):
             #print 'State',self.obsArray, " ", actInt
             self.action = self.int2bin(actInt)
             #print "ACTION TAKEN", actInt," ",self.action
+            self.human_input += 1
             self.record_action = True
             self.actionTaken = actInt
 
@@ -120,6 +122,9 @@ class Dagger(MarioAgent):
     def getDataAdded(self):
         return self.dataAdded
 
+    def getNumHumanInput(self):
+        return self.human_input
+
     def newModel(self):
         self.learner.newModel(self.states,self.actions)
 
@@ -137,6 +142,7 @@ class Dagger(MarioAgent):
         self.states  = numpy.zeros([1,self.STATE_DIM])
         self.kmm_state = numpy.zeros([1,self.STATE_DIM])
         self.weight = numpy.zeros(1)
+
         self.count = 0
 
     def printLevelScene(self):
