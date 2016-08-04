@@ -72,9 +72,7 @@ class Dagger(MarioAgent):
         else: 
 
             actInt = self.learner.getAction(self.obsArray.T)
-            #print 'State',self.obsArray, " ", actInt
             self.action = self.int2bin(actInt)
-            #print "ACTION TAKEN", actInt," ",self.action
             self.human_input += 1
             self.record_action = True
             self.actionTaken = actInt
@@ -97,7 +95,7 @@ class Dagger(MarioAgent):
                 elif(self.record_action and self.prevMario != self.marioFloats[0]): 
                     obsArray_csr = csr_matrix(self.obsArray)
                     self.kmm_state = vstack((self.kmm_state,obsArray_csr.T))
-                    if((self.actionTaken != action)):
+                    if True:#if((self.actionTaken != action)):
                         self.prevMario = self.marioFloats[0]
                         self.actions = numpy.vstack((self.actions,numpy.array([action])))
                         self.states = numpy.vstack((self.states,self.obsArray.T))

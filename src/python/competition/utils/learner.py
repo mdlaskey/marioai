@@ -26,7 +26,7 @@ class Learner():
 	gamma_clf = 1e-3
 	first_time = False
 	iter_ = 1
-	use_AHQP = True
+	use_AHQP = False
 	
 	def __init__(self,sigma=1.0):
 		self.ahqp_solver = AHQP(sigma)
