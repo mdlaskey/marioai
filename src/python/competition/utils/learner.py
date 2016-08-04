@@ -113,7 +113,9 @@ class Learner():
 			self.Weights = np.ravel(self.Weights)
 			self.clf.fit(States,Action,self.Weights)
 		else:
-			self.clf.fit(States,Action)
+			self.clf.fit(States, Action)
+			acc = self.clf.score(States, Action)
+			print "ACCURACY: " + str(acc)
 		#SVM parameters computed via cross validation
 	
 	

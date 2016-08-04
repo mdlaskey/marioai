@@ -119,7 +119,6 @@ def main():
     
  
     # pickle.dump(results,open('results.p','wb'))
-    IPython.embed()
 
     plt.figure(1)
     for i in range(len(results)):

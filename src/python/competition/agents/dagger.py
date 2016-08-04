@@ -92,7 +92,7 @@ class Dagger(MarioAgent):
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
                     self.obsArray = csr_matrix(self.obsArray)
                     self.states = vstack((self.states,self.obsArray.T))
-                elif(self.record_action and self.prevMario != self.marioFloats[0]): 
+                else:#elif(self.record_action and self.prevMario != self.marioFloats[0]): 
                     obsArray_csr = csr_matrix(self.obsArray)
                     self.kmm_state = vstack((self.kmm_state,obsArray_csr.T))
                     if True:#if((self.actionTaken != action)):
