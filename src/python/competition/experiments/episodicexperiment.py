@@ -32,7 +32,7 @@ class EpisodicExperiment(Experiment):
     def doEpisodes(self, number = 1):
         """ returns the rewards of each step as a list """
         all_rewards = []
-
+        self.task.env.changeLevel()
 
         # DO THE SUPERVISED TRAJECTORY FIRST
         if self.agent._name == 'supervise':
