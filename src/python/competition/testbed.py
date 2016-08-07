@@ -9,6 +9,7 @@ from agents.forwardagent import ForwardAgent
 from agents.forwardrandomagent import ForwardRandomAgent
 from agents.ahude import Ahude
 from agents.dagger import Dagger 
+from agents.supervise import Supervise
 from agents.sheath import Sheath
 import IPython
 import matplotlib.pyplot as plt
@@ -27,7 +28,8 @@ IT = False
 
 def main():
     f = open('try_3.txt','w')
-    
+    g = open('accs.txt', 'w')
+    g.close()
     task = MarioTask("testbed", initMarioMode = 2)
     task.env.initMarioMode = 2
     task.env.levelDifficulty = 1
@@ -41,11 +43,18 @@ def main():
     agent = Dagger(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    dagger_results = T.test(rounds = 5,iterations = 35)
+    dagger_results = T.test(rounds = 1,iterations = 3)
     results.append(dagger_results)
     names.append('dagger')
     pickle.dump(results,open('results.p','wb'))
 
+    agent = Supervise(IT,useKMM = False)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    supervise_results = T.test(rounds = 1,iterations = 3)
+    results.append(supervise_results)
+    names.append('supervise')
+    pickle.dump(results,open('results.p','wb'))
 
 
     # agent = Sheath(IT,useKMM = False,sigma = 1.0)

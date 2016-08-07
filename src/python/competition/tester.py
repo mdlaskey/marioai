@@ -53,11 +53,13 @@ class Tester:
 
             self.agent.initialTraining = True
             self.exp.doEpisodes(1)
-            self.agent.newModel()
-            self.agent.saveModel()
-            self.agent.initialTraining = False 
-            self.agent.loadModel()
-            self.agent.reset()
+            if self.agent._name != "supervise":
+                self.agent.newModel()
+                self.agent.saveModel()
+            self.agent.initialTraining = False
+            if self.agent._name != "supervise":
+                self.agent.loadModel()
+                self.agent.reset()
 
 
             distances = np.zeros(iterations)
@@ -110,6 +112,7 @@ class Tester:
         avg_human_input = avg_human_input/rounds
         self.exp.task.env.setLevelBack()
         
+        print avg_distance
 
         return avg_data,avg_distance,num_mismatch,num_ask_help,avg_precision,avg_human_input
 

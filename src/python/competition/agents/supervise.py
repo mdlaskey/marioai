@@ -8,7 +8,7 @@ from utils.learner import Learner
 from scipy.sparse import csr_matrix
 from scipy.sparse import vstack
 
-class Dagger(MarioAgent):
+class Supervise(MarioAgent):
     """ In fact the Python twin of the
         corresponding Java ForwardAgent.
     """
@@ -52,7 +52,8 @@ class Dagger(MarioAgent):
         self.count = 0; 
         self.human_input = 0; 
         self.prevMario = 0.0
-        self._name = 'dagger'
+        self._name = 'supervise'
+        self.isLearning = False
       
         
     def loadModel(self):
@@ -66,19 +67,18 @@ class Dagger(MarioAgent):
 #            self.levelScene[11,13], self.trueJumpCounter)
 #        if (self.isEpisodeOver):
 #            return numpy.ones(5, int)
-       
-        if self.initialTraining or self.count <= 5:
+        if self.isLearning or self.count <= 6:
             self.action[5] = 1
-            self.record_action = True; 
-        else: 
-
+            self.record_action = True;
+        else:
             actInt = self.learner.getAction(self.obsArray.T)
             self.action = self.int2bin(actInt)
-            # self.human_input += 1
             self.record_action = True
             self.actionTaken = actInt
-
+            # print "Should taken: " + str(self.should_take_action)
+            # print "Taken: " + str(self.actionTaken)
         return self.action
+
 
     def integrateObservation(self, obs):
         """This method stores the observation inside the agent"""
@@ -89,19 +89,26 @@ class Dagger(MarioAgent):
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
 
             if(self.count > 5):
-                if(self.initialTraining):
+                if self.isLearning:
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
                     self.obsArray = csr_matrix(self.obsArray)
                     self.states = vstack((self.states,self.obsArray.T))
-                else:#elif(self.record_action and self.prevMario != self.marioFloats[0]): 
-                    obsArray_csr = csr_matrix(self.obsArray)
-                    self.kmm_state = vstack((self.kmm_state,obsArray_csr.T))
-                    if True:#if((self.actionTaken != action)):
-                        self.prevMario = self.marioFloats[0]
-                        self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                        self.states = numpy.vstack((self.states,self.obsArray.T))
+                    self.human_input += 1
+                else:
+                    self.should_take_action = action
 
-                self.human_input += 1
+                # if(self.initialTraining):
+                #     self.actions = numpy.vstack((self.actions,numpy.array([action])))
+                #     self.obsArray = csr_matrix(self.obsArray)
+                #     self.states = vstack((self.states,self.obsArray.T))
+                # else:#elif(self.record_action and self.prevMario != self.marioFloats[0]): 
+                #     obsArray_csr = csr_matrix(self.obsArray)
+                #     self.kmm_state = vstack((self.kmm_state,obsArray_csr.T))
+                #     if True:#if((self.actionTaken != action)):
+                #         self.prevMario = self.marioFloats[0]
+                #         self.actions = numpy.vstack((self.actions,numpy.array([action])))
+                #         self.states = numpy.vstack((self.states,self.obsArray.T))
+                    
             self.count += 1
             #self.printLevelScene()
     def int2bin(self,num):
@@ -116,7 +123,7 @@ class Dagger(MarioAgent):
         # print self.states
         # print self.actions 
 
-        self.learner.updateModel(self.states,self.actions,self.kmm_state)
+        self.learner.updateModel(self.states,self.actions,None)#self.kmm_state)
         self.dataAdded = self.actions.shape[0]
 
     def getDataAdded(self):
@@ -135,7 +142,7 @@ class Dagger(MarioAgent):
         return self.learner.getNumData()
         
     def getName(self):
-        return "Dagger"
+        return "Supervise"
         
     def reset(self):
         self.actions = numpy.array([0])

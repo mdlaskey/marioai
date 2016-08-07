@@ -32,6 +32,32 @@ class EpisodicExperiment(Experiment):
     def doEpisodes(self, number = 1):
         """ returns the rewards of each step as a list """
         all_rewards = []
+
+
+        # DO THE SUPERVISED TRAJECTORY FIRST
+        if self.agent._name == 'supervise':
+            print "Running initial trail"
+            self.agent.isLearning = True
+            for dummy in range(number):
+                rewards = []
+                self.stepid = 0
+                # the agent is informed of the start of the episode
+                self.agent.newEpisode()
+                self.task.reset()
+                while not self.task.isFinished():
+                    r = self._oneInteraction()
+                    rewards.append(r)
+                all_rewards.append(rewards)
+            if self.agent.initialTraining:
+                self.agent.newModel()
+                self.agent.saveModel()
+                self.agent.loadModel()
+            self.agent.isLearning=False
+            self.agent.updateModel()
+
+
+
+        all_rewards = []
         for dummy in range(number):
             rewards = []
             self.stepid = 0
@@ -42,7 +68,7 @@ class EpisodicExperiment(Experiment):
                 r = self._oneInteraction()
                 rewards.append(r)
             all_rewards.append(rewards)
-        
+        print "REWARDS: " + str(all_rewards)
         return all_rewards
         
 

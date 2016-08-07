@@ -105,7 +105,7 @@ class Learner():
 
 		self.clf = svm.LinearSVC()
 		self.novel = svm.OneClassSVM()
-		self.clf.C = 1e-2
+		self.clf.C = 1e-4#1e-2
 
 		#self.clf.kernel = 'linear'
 		
@@ -113,8 +113,11 @@ class Learner():
 			self.Weights = np.ravel(self.Weights)
 			self.clf.fit(States,Action,self.Weights)
 		else:
+			print "Training on: " + str(States.shape[0]) + " examples"
 			self.clf.fit(States, Action)
 			acc = self.clf.score(States, Action)
+			with open('accs.txt', 'a') as f:
+				f.write(str(States.shape[0]) + " examples: " + str(acc) + "\n")
 			print "ACCURACY: " + str(acc)
 		#SVM parameters computed via cross validation
 	
@@ -254,8 +257,6 @@ class Learner():
 			kmm.assembleKernel(self.States,kmm_state)
 			self.Weights = kmm.solveQP()
 			self.Weights =  np.zeros((self.Weights.shape[0],1))+self.Weights
-
-
 		
 		self.supStates = np.vstack((self.supStates,new_states.todense()))
 		self.Actions = np.vstack((self.Actions,new_actions))
