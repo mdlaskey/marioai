@@ -7,6 +7,7 @@ from marioagent import MarioAgent
 from utils.learner import Learner
 from scipy.sparse import csr_matrix
 from scipy.sparse import vstack
+import time
 
 class Dagger(MarioAgent):
     """ In fact the Python twin of the
@@ -82,6 +83,7 @@ class Dagger(MarioAgent):
 
     def integrateObservation(self, obs):
         """This method stores the observation inside the agent"""
+        start_time = time.time()
         self.obs = obs
         if (len(obs) != 8):
             self.isEpisodeOver = True
@@ -93,17 +95,25 @@ class Dagger(MarioAgent):
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
                     self.obsArray = csr_matrix(self.obsArray)
                     self.states = vstack((self.states,self.obsArray.T))
-                else:#elif(self.record_action and self.prevMario != self.marioFloats[0]): 
-                    obsArray_csr = csr_matrix(self.obsArray)
-                    self.kmm_state = vstack((self.kmm_state,obsArray_csr.T))
-                    if True:#if((self.actionTaken != action)):
-                        self.prevMario = self.marioFloats[0]
-                        self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                        self.states = numpy.vstack((self.states,self.obsArray.T))
+                    self.human_input += 1
+
+                #     self.actions = numpy.vstack((self.actions,numpy.array([action])))
+                #     self.obsArray = csr_matrix(self.obsArray)
+                #     self.states = vstack((self.states,self.obsArray.T))
+                # else:#elif(self.record_action and self.prevMario != self.marioFloats[0]): 
+                #     # self.obsArray = csr_matrix(self.obsArray)
+                #     # obsArray_csr = csr_matrix(self.obsArray)
+                #     # self.kmm_state = vstack((self.kmm_state,obsArray_csr.T))
+                #     if True:#if((self.actionTaken != action)):
+                #         #self.prevMario = self.marioFloats[0]
+                #         self.actions = numpy.vstack((self.actions,numpy.array([action])))
+                #         self.states = numpy.vstack((self.states,self.obsArray.T))
 
                 self.human_input += 1
             self.count += 1
             #self.printLevelScene()
+        # self._write_out(time.time() - start_time)
+
     def int2bin(self,num):
         action = numpy.zeros(6)
         actStr = numpy.binary_repr(num)
@@ -112,11 +122,17 @@ class Dagger(MarioAgent):
             action[i] = float(actStr[len(actStr)-1-i])
         return action 
 
+    def _write_out(self, time):
+        filename = 'dagger_times.txt'
+        with open(filename, 'a') as f:
+            f.write("time: " + str(time) + "\n")
+        return
+
     def updateModel(self):
         # print self.states
         # print self.actions 
 
-        self.learner.updateModel(self.states,self.actions,self.kmm_state)
+        self.learner.updateModel(self.states,self.actions,None)
         self.dataAdded = self.actions.shape[0]
 
     def getDataAdded(self):

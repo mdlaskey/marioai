@@ -7,6 +7,7 @@ from marioagent import MarioAgent
 from utils.learner import Learner
 from scipy.sparse import csr_matrix
 from scipy.sparse import vstack
+import time
 
 class Supervise(MarioAgent):
     """ In fact the Python twin of the
@@ -82,6 +83,7 @@ class Supervise(MarioAgent):
 
     def integrateObservation(self, obs):
         """This method stores the observation inside the agent"""
+        start_time = time.time()
         self.obs = obs
         if (len(obs) != 8):
             self.isEpisodeOver = True
@@ -110,6 +112,8 @@ class Supervise(MarioAgent):
                 #         self.states = numpy.vstack((self.states,self.obsArray.T))
                     
             self.count += 1
+        # self._write_out(time.time() - start_time)
+
             #self.printLevelScene()
     def int2bin(self,num):
         action = numpy.zeros(6)
@@ -118,6 +122,12 @@ class Supervise(MarioAgent):
         for i in range(len(actStr)):
             action[i] = float(actStr[len(actStr)-1-i])
         return action 
+    
+    def _write_out(self, time):
+        filename = 'supervise_times.txt'
+        with open(filename, 'a') as f:
+            f.write("time: " + str(time) + "\n")
+        return
 
     def updateModel(self):
         # print self.states

@@ -46,6 +46,12 @@ class Tester:
         avg_precision = np.zeros(iterations)
         avg_human_input = np.zeros(iterations)
         
+        num_ask_help_r = np.zeros((rounds, iterations))
+        num_mismatch_r = np.zeros((rounds, iterations))
+        avg_data_r = np.zeros((rounds, iterations))
+        avg_distance_r = np.zeros((rounds, iterations))
+        avg_precision_r = np.zeros((rounds, iterations))
+        avg_human_input_r = np.zeros((rounds, iterations))
         
 
 
@@ -53,13 +59,11 @@ class Tester:
 
             self.agent.initialTraining = True
             self.exp.doEpisodes(1)
-            if self.agent._name != "supervise":
-                self.agent.newModel()
-                self.agent.saveModel()
+            self.agent.newModel()
+            self.agent.saveModel()
             self.agent.initialTraining = False
-            if self.agent._name != "supervise":
-                self.agent.loadModel()
-                self.agent.reset()
+            self.agent.loadModel()
+            self.agent.reset()
 
 
             distances = np.zeros(iterations)
@@ -96,6 +100,10 @@ class Tester:
             if(self.agent._getName() == 'Ahude'):
                 num_ask_help = num_ask_help + num_help
                 num_mismatch = num_mismatch + mis_match
+
+
+            avg_data_r[r, :] = data
+            
 
             avg_data = data+avg_data
             avg_distance = distances+avg_distance 
