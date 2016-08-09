@@ -16,8 +16,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tester import Tester 
 import cPickle as pickle 
-
-
+from analysis import Analysis
 
 #from pybrain.... episodic import EpisodicExperiment
 #TODO: reset sends: vis, diff=, lt=, ll=, rs=, mariomode, time limit, pw,
@@ -39,11 +38,14 @@ def main():
 
     
     # # #test dagger
+    iterations = 35
 
     agent = Dagger(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    dagger_results = T.test(rounds = 2,iterations = 1)
+    dagger_results = T.test(rounds = 10,iterations = iterations)
+    dagger_data = dagger_results[-1]
+    dagger_results = dagger_results[:-1]
     results.append(dagger_results)
     names.append('dagger')
     pickle.dump(results,open('results.p','wb'))
@@ -51,10 +53,21 @@ def main():
     agent = Supervise(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    supervise_results = T.test(rounds = 2,iterations = 1)
+    supervise_results = T.test(rounds = 10,iterations = iterations)
+    supervise_data = supervise_results[-1]
+    supervise_results = supervise_results[:-1]
     results.append(supervise_results)
     names.append('supervise')
     pickle.dump(results,open('results.p','wb'))
+
+    IPython.embed()
+
+    analysis = Analysis()
+    analysis.get_perf(supervise_data, results[1][5])
+    analysis.get_perf(dagger_data, results[0][5])
+    analysis.plot(names=['Supervise', 'DAgger'], label='Reward', filename='./return_plot.eps')#, ylims=[-1, 0])
+
+
 
 
     # agent = Sheath(IT,useKMM = False,sigma = 1.0)

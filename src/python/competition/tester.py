@@ -89,7 +89,7 @@ class Tester:
                     self.agent.off = False
 
                 size = len(rewards[0])
-               
+                
                     
                 distances[t] = rewards[0][size-1]
                
@@ -103,7 +103,7 @@ class Tester:
 
 
             avg_data_r[r, :] = data
-            
+
 
             avg_data = data+avg_data
             avg_distance = distances+avg_distance 
@@ -122,7 +122,7 @@ class Tester:
         
         print avg_distance
 
-        return avg_data,avg_distance,num_mismatch,num_ask_help,avg_precision,avg_human_input
+        return avg_data,avg_distance,num_mismatch,num_ask_help,avg_precision,avg_human_input, avg_data_r
 
              
              
