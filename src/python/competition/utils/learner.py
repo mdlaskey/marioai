@@ -5,6 +5,7 @@ import IPython
 import cPickle as pickle
 from numpy import linalg as LA
 from sklearn import svm
+from sklearn.tree import DecisionTreeClassifier
 from sklearn import preprocessing
 from sklearn import linear_model
 from sklearn import metrics
@@ -103,8 +104,9 @@ class Learner():
 
 		Action = np.ravel(Action)
 
-		self.clf = svm.LinearSVC()
-		self.novel = svm.OneClassSVM()
+		self.clf = DecisionTreeClassifier(max_depth=500)#svm.LinearSVC()
+		#self.clf = svm.SVC(kernel='rbf')
+                self.novel = svm.OneClassSVM()
 		self.clf.C = 1e-4#1e-2
 
 		#self.clf.kernel = 'linear'
@@ -116,6 +118,7 @@ class Learner():
 			print "Training on: " + str(States.shape[0]) + " examples"
 			self.clf.fit(States, Action)
 			acc = self.clf.score(States, Action)
+                        self.accs = acc
 			with open('accs.txt', 'a') as f:
 				f.write(str(States.shape[0]) + " examples: " + str(acc) + "\n")
 			print "ACCURACY: " + str(acc)

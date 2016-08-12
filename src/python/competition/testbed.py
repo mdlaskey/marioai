@@ -38,34 +38,82 @@ def main():
 
     
     # # #test dagger
-    iterations = 35
+    iterations = 200
+    rounds = 10
+    #agent = Dagger(IT,useKMM = False)
+    #exp = EpisodicExperiment(task, agent) 
+    #T = Tester(agent,exp)
+    #dagger_results = T.test(rounds = rounds,iterations = iterations)
+    #dagger_data = dagger_results[-1]
+    #dagger_results = dagger_results[:-1]
+    #results.append(dagger_results)
+    #names.append('dagger')
+    #pickle.dump(results,open('results.p','wb'))
 
-    agent = Dagger(IT,useKMM = False)
-    exp = EpisodicExperiment(task, agent) 
-    T = Tester(agent,exp)
-    dagger_results = T.test(rounds = 10,iterations = iterations)
-    dagger_data = dagger_results[-1]
-    dagger_results = dagger_results[:-1]
-    results.append(dagger_results)
-    names.append('dagger')
-    pickle.dump(results,open('results.p','wb'))
+    #agent = Dagger(IT, useKMM=False)
+    #exp = EpisodicExperiment(task, agent)
+    #T = Tester(agent, exp)
+    #dagger_data, _, acc = T.test(rounds = rounds, iterations = iterations)
+    
 
     agent = Supervise(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    supervise_results = T.test(rounds = 10,iterations = iterations)
-    supervise_data = supervise_results[-1]
-    supervise_results = supervise_results[:-1]
-    results.append(supervise_results)
-    names.append('supervise')
-    pickle.dump(results,open('results.p','wb'))
+    sl_data, sup_data, acc = T.test(rounds = rounds, iterations = iterations)
 
+    np.save('./data/sup_data.npy', sup_data)
+    np.save('./data/sl_data.npy', sl_data)
+    np.save('./data/acc.npy', acc)    
+    
     IPython.embed()
 
     analysis = Analysis()
-    analysis.get_perf(supervise_data, results[1][5])
-    analysis.get_perf(dagger_data, results[0][5])
-    analysis.plot(names=['Supervise', 'DAgger'], label='Reward', filename='./return_plot.eps')#, ylims=[-1, 0])
+    analysis.get_perf(sup_data, range(iterations))
+    analysis.get_perf(sl_data, range(iterations))
+    analysis.plot(names=['Supervisor', 'Supervised Learning'], label='Reward', filename='./results/return_plots.eps', ylims=[0, 1600])
+
+    acc_a = Analysis()
+    acc_a.get_perf(acc, range(iterations))
+    acc_a.plot(names=['Supervised Learning Acc.'], label='Accuracy', filename='./results/acc_plots.eps')
+
+    """
+    agent = Dagger(IT,useKMM = False)
+    exp = EpisodicExperiment(task, agent) 
+    T = Tester(agent,exp)
+    dagger_data, _, acc = T.test(rounds = rounds, iterations = iterations)
+
+    np.save('./data/dagger_data.npy', dagger_data)
+    np.save('./data/acc.npy', acc)    
+    
+    IPython.embed()
+
+    analysis = Analysis()
+    analysis.get_perf(dagger_data, range(iterations))
+    analysis.plot(names=['DAgger'], label='Reward', filename='./results/return_plots.eps', ylims=[0, 1600])
+
+    acc_a = Analysis()
+    acc_a.get_perf(acc, range(iterations))
+    acc_a.plot(names=['DAgger Acc.'], label='Accuracy', filename='./results/acc_plots.eps')
+    """
+
+    
+    
+    #agent = Supervise(IT,useKMM = False)
+    #exp = EpisodicExperiment(task, agent) 
+    #T = Tester(agent,exp)
+    #supervise_results = T.test(rounds = rounds, iterations = iterations)
+    #supervise_data = supervise_results[-1]
+    #supervise_results = supervise_results[:-1]
+    #results.append(supervise_results)
+    #names.append('supervise')
+    #pickle.dump(results,open('results.p','wb'))
+
+    #IPython.embed()
+
+    #analysis = Analysis()
+    #analysis.get_perf(supervise_data, results[1][5])
+    #analysis.get_perf(dagger_data, results[0][5])
+    #analysis.plot(names=['Supervise', 'DAgger'], label='Reward', filename='./return_plot.eps')#, ylims=[-1, 0])
 
 
 
@@ -142,12 +190,12 @@ def main():
  
     # pickle.dump(results,open('results.p','wb'))
 
-    plt.figure(1)
-    for i in range(len(results)):
-        plt.plot(results[i][5],results[i][1])
+    #plt.figure(1)
+    #for i in range(len(results)):
+    #    plt.plot(results[i][5],results[i][1])
     
     
-    plt.legend(names,loc='upper left')
+    #plt.legend(names,loc='upper left')
 
     # plt.figure(2)
     # for i in range(len(results)):

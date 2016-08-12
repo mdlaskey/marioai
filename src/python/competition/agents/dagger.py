@@ -68,7 +68,7 @@ class Dagger(MarioAgent):
 #        if (self.isEpisodeOver):
 #            return numpy.ones(5, int)
        
-        if self.initialTraining or self.count <= 5:
+        if self.initialTraining or self.count <= 6:
             self.action[5] = 1
             self.record_action = True; 
         else: 
@@ -95,8 +95,13 @@ class Dagger(MarioAgent):
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
                     self.obsArray = csr_matrix(self.obsArray)
                     self.states = vstack((self.states,self.obsArray.T))
-                    self.human_input += 1
+                else:
+                    if((self.actionTaken != action)):
+                        self.actions = numpy.vstack((self.actions,numpy.array([action])))
+                        self.obsArray = csr_matrix(self.obsArray)
+                        self.states = vstack((self.states,self.obsArray.T))
 
+                        
                 #     self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 #     self.obsArray = csr_matrix(self.obsArray)
                 #     self.states = vstack((self.states,self.obsArray.T))

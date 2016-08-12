@@ -46,28 +46,27 @@ class EpisodicExperiment(Experiment):
     def doEpisodes(self, number = 1):
         """ returns the rewards of each step as a list """
         all_rewards = []
-        self.task.env.changeLevel()
+        #self.task.env.changeLevel()
 
         if self.agent.initialTraining or self.agent._name == 'dagger':
             print "Running initial training"
             self.agent.isLearning = True
             all_rewards = self._runTrajectory(number)
-            print "REWARDS: " + str(all_rewards)
             self.agent.isLearning = False
-            return all_rewards
+            return all_rewards, None
         else:
             # Must be supervise here
             # run the sample trial
             all_rewards = self._runTrajectory(number)
-            print "REWARDS: " + str(all_rewards)
 
             # run the learning trial
             self.agent.isLearning = True
-            self._runTrajectory(number)
+            sup_rewards = self._runTrajectory(number)
             self.agent.isLearning = False
             self.agent.updateModel()
+            print sup_rewards
             # return reward from sampled trial
-            return all_rewards
+            return all_rewards, sup_rewards
 
 
         # # DO THE SUPERVISED TRAJECTORY FIRST

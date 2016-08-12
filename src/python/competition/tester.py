@@ -10,7 +10,7 @@ from agents.dagger import Dagger
 import IPython
 import matplotlib.pyplot as plt
 import numpy as np
-
+from analysis import Analysis
 
 class Tester:
     """ In fact the Python twin of the
@@ -52,8 +52,8 @@ class Tester:
         avg_distance_r = np.zeros((rounds, iterations))
         avg_precision_r = np.zeros((rounds, iterations))
         avg_human_input_r = np.zeros((rounds, iterations))
-        
-
+        sup_data_r = np.zeros((rounds, iterations))
+        acc_data = np.zeros((rounds, iterations))
 
         for r in range(rounds):
 
@@ -69,17 +69,21 @@ class Tester:
             distances = np.zeros(iterations)
             mis_match = np.zeros(iterations)
             data = np.zeros(iterations)
+            sup_data = np.zeros(iterations)
             num_help = np.zeros(iterations)
             precision = np.zeros(iterations)
             human_input = np.zeros(iterations)
+            acc = np.zeros(iterations)
+
             for t in range(iterations):
                 
-                rewards = self.exp.doEpisodes(1)
+                rewards, sup_rewards = self.exp.doEpisodes(1)
                 
-                size = len(rewards[0])
-                data[t] = rewards[0][size-1]
+                data[t] = rewards[0][-1]             # taking from the first sample
+                if self.agent._name == 'supervise':
+                    sup_data[t] = sup_rewards[0][-1]    # taking from the first sample
                 self.agent.updateModel()
-               
+                acc[t] = self.agent.learner.accs
 
                 if(self.agent._getName() == 'Ahude'):
                     num_help[t] = self.agent.getNumHelp()
@@ -103,6 +107,16 @@ class Tester:
 
 
             avg_data_r[r, :] = data
+            if self.agent._name == 'supervise':
+                sup_data_r[r, :] = sup_data
+            acc_data[r, :] = acc
+            # plot single trial
+            a = Analysis()
+            a.get_perf(np.array([sup_data]), range(iterations))
+            a.get_perf(np.array([data]), range(iterations))
+            a.plot(names=['Supervisor', 'Supervised Learning'], label='Rewards', filename='./results/return_plot' + str(r) + '.eps')
+    
+            # end plot single trial
 
 
             avg_data = data+avg_data
@@ -110,7 +124,7 @@ class Tester:
             avg_precision = precision+avg_precision
             avg_human_input = avg_human_input + human_input
           
-            # self.exp.task.env.changeLevel()
+            self.exp.task.env.changeLevel()
         
         num_ask_help = num_ask_help/rounds
         num_mismatch = num_mismatch/rounds
@@ -120,9 +134,12 @@ class Tester:
         avg_human_input = avg_human_input/rounds
         self.exp.task.env.setLevelBack()
         
-        print avg_distance
-
-        return avg_data,avg_distance,num_mismatch,num_ask_help,avg_precision,avg_human_input, avg_data_r
+        #print avg_distance
+        if self.agent._name == 'supervise':
+            return avg_data_r, sup_data_r, acc_data
+        else:
+            return avg_data_r, None, acc_data
+        #return avg_data,avg_distance,num_mismatch,num_ask_help,avg_precision,avg_human_input, avg_data_r
 
              
              
