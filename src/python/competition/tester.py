@@ -74,15 +74,13 @@ class Tester:
             precision = np.zeros(iterations)
             human_input = np.zeros(iterations)
             acc = np.zeros(iterations)
-
             for t in range(iterations):
                 
                 rewards, sup_rewards = self.exp.doEpisodes(1)
-                
                 data[t] = rewards[0][-1]             # taking from the first sample
                 if self.agent._name == 'supervise':
                     sup_data[t] = sup_rewards[0][-1]    # taking from the first sample
-                self.agent.updateModel()
+                #self.agent.updateModel()
                 acc[t] = self.agent.learner.accs
 
                 if(self.agent._getName() == 'Ahude'):
@@ -124,8 +122,14 @@ class Tester:
             avg_precision = precision+avg_precision
             avg_human_input = avg_human_input + human_input
           
-            self.exp.task.env.changeLevel()
-        
+            #self.exp.task.env.changeLevel()
+       
+        #IPython.embed()
+        #self.record_actions = np.array(self.record_actions)
+        #for i, traj in enumerate(self.record_actions):
+        #    plt.plot(traj, linewidth=3.0)
+        #plt.show()
+
         num_ask_help = num_ask_help/rounds
         num_mismatch = num_mismatch/rounds
         avg_data = avg_data/rounds

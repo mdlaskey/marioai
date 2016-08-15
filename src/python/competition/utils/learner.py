@@ -104,7 +104,9 @@ class Learner():
 
 		Action = np.ravel(Action)
 
-		self.clf = DecisionTreeClassifier(max_depth=500)#svm.LinearSVC()
+		self.clf = DecisionTreeClassifier(max_depth=100)
+                #self.clf = svm.LinearSVC()
+		#self.clf = DecisionTreeClassifier(max_depth=500)#svm.LinearSVC()
 		#self.clf = svm.SVC(kernel='rbf')
                 self.novel = svm.OneClassSVM()
 		self.clf.C = 1e-4#1e-2
@@ -115,6 +117,7 @@ class Learner():
 			self.Weights = np.ravel(self.Weights)
 			self.clf.fit(States,Action,self.Weights)
 		else:
+                        print "\nTRAINING\n"
 			print "Training on: " + str(States.shape[0]) + " examples"
 			self.clf.fit(States, Action)
 			acc = self.clf.score(States, Action)

@@ -38,8 +38,10 @@ def main():
 
     
     # # #test dagger
-    iterations = 200
-    rounds = 10
+    #iterations = 40
+    #rounds = 1
+    iterations = 5
+    rounds = 3
     #agent = Dagger(IT,useKMM = False)
     #exp = EpisodicExperiment(task, agent) 
     #T = Tester(agent,exp)

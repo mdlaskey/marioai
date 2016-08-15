@@ -69,6 +69,7 @@ class Dagger(MarioAgent):
 #            return numpy.ones(5, int)
        
         if self.initialTraining or self.count <= 6:
+            self.action = np.zeros(6, int)
             self.action[5] = 1
             self.record_action = True; 
         else: 

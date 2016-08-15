@@ -8,7 +8,7 @@ from utils.learner import Learner
 from scipy.sparse import csr_matrix
 from scipy.sparse import vstack
 import time
-
+import numpy as np
 class Supervise(MarioAgent):
     """ In fact the Python twin of the
         corresponding Java ForwardAgent.
@@ -55,7 +55,6 @@ class Supervise(MarioAgent):
         self.prevMario = 0.0
         self._name = 'supervise'
         self.isLearning = False
-      
         
     def loadModel(self):
         self.learner.Load()
@@ -67,18 +66,38 @@ class Supervise(MarioAgent):
 #            % (self.mayMarioJump, self.isMarioOnGround, self.levelScene[11,12], \
 #            self.levelScene[11,13], self.trueJumpCounter)
 #        if (self.isEpisodeOver):
-#            return numpy.ones(5, int)
+#            return numpy.ones(5, int)            
         if self.isLearning or self.count <= 6:
+            self.action = numpy.zeros(6, int)
             self.action[5] = 1
-            self.record_action = True;
+            self.record = True
         else:
             actInt = self.learner.getAction(self.obsArray.T)
             self.action = self.int2bin(actInt)
             self.record_action = True
             self.actionTaken = actInt
-            # print "Should taken: " + str(self.should_take_action)
-            # print "Taken: " + str(self.actionTaken)
+        
         return self.action
+        
+        """if self.count <= 6:
+            self.action = numpy.zeros(6, int)
+            self.action[5] = 1
+            self.record=True
+        elif self.isLearning or self.count <= 6:
+            #self.action = numpy.zeros(6, int)
+            #self.action[5] = 1
+            self.action = self.int2bin(self.should_take_action)
+            self.record_action = True;
+        else:
+            actInt = self.learner.getAction(self.obsArray.T)
+            self.record_actions.append(actInt[0])
+            self.action = self.int2bin(10)
+            self.action = self.int2bin(actInt)
+            self.record_action = True
+            self.actionTaken = actInt
+            print "Should taken: " + str(self.should_take_action)
+            print "Taken: " + str(self.actionTaken[0])
+        return self.action"""
 
 
     def integrateObservation(self, obs):
@@ -89,16 +108,16 @@ class Supervise(MarioAgent):
             self.isEpisodeOver = True
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
-
+            self.should_take_action = action            
             if(self.count > 5):
                 if self.isLearning:
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
                     self.obsArray = csr_matrix(self.obsArray)
                     self.states = vstack((self.states,self.obsArray.T))
                     self.human_input += 1
+                    self.should_take_action = action
                 else:
                     self.should_take_action = action
-
                 # if(self.initialTraining):
                 #     self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 #     self.obsArray = csr_matrix(self.obsArray)
@@ -159,7 +178,7 @@ class Supervise(MarioAgent):
         self.states  = numpy.zeros([1,self.STATE_DIM])
         self.kmm_state = numpy.zeros([1,self.STATE_DIM])
         self.weight = numpy.zeros(1)
-
+        
         self.count = 0
 
     def printLevelScene(self):

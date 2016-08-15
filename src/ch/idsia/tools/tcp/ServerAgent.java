@@ -73,6 +73,7 @@ public class ServerAgent extends BasicAIAgent implements Agent
         // MERGED
         byte[][] mergedObs = observation.getCompleteObservation(/*1, 0*/);
 
+
         String tmpData = "O " +
                 observation.mayMarioJump() + " " + observation.isMarioOnGround();
         for (int x = 0; x < mergedObs.length; ++x)
@@ -84,7 +85,6 @@ public class ServerAgent extends BasicAIAgent implements Agent
         }
         tmpData += " " + observation.getMarioFloatPos()[0]
                  + " " + observation.getMarioFloatPos()[1];
-
 
         boolean [] actionTaken = observation.getActionTaken(); 
 
