@@ -46,7 +46,7 @@ class EpisodicExperiment(Experiment):
     def doEpisodes(self, number = 1):
         """ returns the rewards of each step as a list """
         all_rewards = []
-        #self.task.env.changeLevel()
+        self.task.env.changeLevel()
 
         if self.agent.initialTraining or self.agent._name == 'dagger':
             print "Running initial training"

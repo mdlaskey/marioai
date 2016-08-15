@@ -401,7 +401,8 @@ public class MarioComponent extends JComponent implements Runnable, /*KeyListene
 
 
     public boolean[] getActionTaken(){
-        return actionTaken; 
+        return expert.getAction(this);
+        //return actionTaken; 
     }
 
     public byte[][] getLevelSceneObservation() {

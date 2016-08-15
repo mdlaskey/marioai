@@ -124,7 +124,7 @@ class Tester:
             avg_precision = precision+avg_precision
             avg_human_input = avg_human_input + human_input
           
-            self.exp.task.env.changeLevel()
+            #self.exp.task.env.changeLevel()
         
         num_ask_help = num_ask_help/rounds
         num_mismatch = num_mismatch/rounds

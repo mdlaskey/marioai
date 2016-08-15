@@ -69,8 +69,12 @@ class Supervise(MarioAgent):
 #        if (self.isEpisodeOver):
 #            return numpy.ones(5, int)
         if self.isLearning or self.count <= 6:
-            self.action[5] = 1
-            self.record_action = True;
+            actInt = self.should_take_action
+            self.action = self.int2bin(actInt)
+            self.actionTaken = actInt
+            self.record_action = True
+            #self.action[5] = 1
+            #self.record_action = True;
         else:
             actInt = self.learner.getAction(self.obsArray.T)
             self.action = self.int2bin(actInt)
@@ -89,7 +93,7 @@ class Supervise(MarioAgent):
             self.isEpisodeOver = True
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
-
+            self.should_take_action = action
             if(self.count > 5):
                 if self.isLearning:
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
