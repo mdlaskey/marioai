@@ -54,6 +54,7 @@ class Tester:
         avg_human_input_r = np.zeros((rounds, iterations))
         sup_data_r = np.zeros((rounds, iterations))
         acc_data = np.zeros((rounds, iterations))
+        self.exp.task.env.changeLevel()
 
         for r in range(rounds):
 
@@ -109,11 +110,15 @@ class Tester:
                 sup_data_r[r, :] = sup_data
             acc_data[r, :] = acc
             # plot single trial
-            a = Analysis()
-            a.get_perf(np.array([sup_data]), range(iterations))
-            a.get_perf(np.array([data]), range(iterations))
-            a.plot(names=['Supervisor', 'Supervised Learning'], label='Rewards', filename='./results/return_plot' + str(r) + '.eps')
-    
+            if self.agent._name == 'supervise':
+                a = Analysis()
+                a.get_perf(np.array([sup_data]), range(iterations))
+                a.get_perf(np.array([data]), range(iterations))
+                a.plot(names=['Supervisor', 'Supervised Learning'], label='Rewards', filename='./results/return_plot' + str(r) + '.eps')
+            elif self.agent._name == 'dagger':
+                a = Analysis()
+                a.get_perf(np.array([data]), range(iterations))
+                a.plot(names=['DAgger'], label='Reward', filename='./results/return_plot' + str(r) + '.eps')
             # end plot single trial
 
 
@@ -122,7 +127,7 @@ class Tester:
             avg_precision = precision+avg_precision
             avg_human_input = avg_human_input + human_input
           
-            #self.exp.task.env.changeLevel()
+            self.exp.task.env.changeLevel()
        
         #IPython.embed()
         #self.record_actions = np.array(self.record_actions)

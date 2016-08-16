@@ -40,8 +40,8 @@ def main():
     # # #test dagger
     #iterations = 40
     #rounds = 1
-    iterations = 5
-    rounds = 3
+    iterations = 35
+    rounds = 15
     #agent = Dagger(IT,useKMM = False)
     #exp = EpisodicExperiment(task, agent) 
     #T = Tester(agent,exp)
@@ -57,7 +57,7 @@ def main():
     #T = Tester(agent, exp)
     #dagger_data, _, acc = T.test(rounds = rounds, iterations = iterations)
     
-
+    """
     agent = Supervise(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
@@ -77,8 +77,8 @@ def main():
     acc_a = Analysis()
     acc_a.get_perf(acc, range(iterations))
     acc_a.plot(names=['Supervised Learning Acc.'], label='Accuracy', filename='./results/acc_plots.eps')
-
     """
+
     agent = Dagger(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
@@ -96,7 +96,7 @@ def main():
     acc_a = Analysis()
     acc_a.get_perf(acc, range(iterations))
     acc_a.plot(names=['DAgger Acc.'], label='Accuracy', filename='./results/acc_plots.eps')
-    """
+
 
     
     

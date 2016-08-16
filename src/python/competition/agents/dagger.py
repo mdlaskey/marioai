@@ -8,6 +8,7 @@ from utils.learner import Learner
 from scipy.sparse import csr_matrix
 from scipy.sparse import vstack
 import time
+import numpy as np
 
 class Dagger(MarioAgent):
     """ In fact the Python twin of the
@@ -90,17 +91,20 @@ class Dagger(MarioAgent):
             self.isEpisodeOver = True
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
-
+            self.obsArray = csr_matrix(self.obsArray)
+            self.should_take_action = action
             if(self.count > 5):
                 if(self.initialTraining):
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                    self.obsArray = csr_matrix(self.obsArray)
-                    self.states = vstack((self.states,self.obsArray.T))
+                    # self.obsArray = csr_matrix(self.obsArray)
+                    # self.states = vstack((self.states,self.obsArray.T))
+                    self.states = vstack((self.states,self.prev_obs.T))
                 else:
                     if((self.actionTaken != action)):
                         self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                        self.obsArray = csr_matrix(self.obsArray)
-                        self.states = vstack((self.states,self.obsArray.T))
+                        # self.obsArray = csr_matrix(self.obsArray)
+                        # self.states = vstack((self.states,self.obsArray.T))
+                        self.states = vstack((self.states,self.prev_obs.T))
 
                         
                 #     self.actions = numpy.vstack((self.actions,numpy.array([action])))
@@ -115,7 +119,8 @@ class Dagger(MarioAgent):
                 #         self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 #         self.states = numpy.vstack((self.states,self.obsArray.T))
 
-                self.human_input += 1
+            self.human_input += 1
+            self.prev_obs = self.obsArray            
             self.count += 1
             #self.printLevelScene()
         # self._write_out(time.time() - start_time)
@@ -165,6 +170,9 @@ class Dagger(MarioAgent):
         self.kmm_state = numpy.zeros([1,self.STATE_DIM])
         self.weight = numpy.zeros(1)
 
+        self.count = 0
+
+    def reset_task(self):
         self.count = 0
 
     def printLevelScene(self):

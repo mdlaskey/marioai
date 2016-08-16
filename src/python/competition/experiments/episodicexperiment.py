@@ -37,7 +37,7 @@ class EpisodicExperiment(Experiment):
             # the agent is informed of the start of the episode
             self.agent.newEpisode()
             self.task.reset()
-
+            self.agent.reset_task()
             while not self.task.isFinished():
                 r = self._oneInteraction()
                 rewards.append(r)
@@ -47,13 +47,16 @@ class EpisodicExperiment(Experiment):
     def doEpisodes(self, number = 1):
         """ returns the rewards of each step as a list """
         all_rewards = []
-        self.task.env.changeLevel()
+        # self.task.env.changeLevel()
 
         if self.agent.initialTraining or self.agent._name == 'dagger':
             print "Running initial training"
             self.agent.isLearning = True
             all_rewards = self._runTrajectory(number)
+            if not self.agent.initialTraining:
+                self.agent.updateModel()
             self.agent.isLearning = False
+            print "REWARDS: " + str(all_rewards)
             return all_rewards, None
         else:
             # Must be supervise here

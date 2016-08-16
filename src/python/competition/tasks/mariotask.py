@@ -3,6 +3,7 @@ __date__ = "$May 7, 2009 12:47:18 PM$"
 
 from client.marioenvironment import MarioEnvironment
 from episodictask import EpisodicTask
+import IPython
 
 if __name__ != "__main__":
     print "Loading %s ..." % __name__;
@@ -28,6 +29,7 @@ class MarioTask(EpisodicTask):
 
     def getObservation(self):
         obs = EpisodicTask.getObservation(self)
+        IPython.embed()
         if len(obs) == MarioEnvironment.numberOfFitnessValues:
             self.reward = obs[1]
             self.status = obs[0]

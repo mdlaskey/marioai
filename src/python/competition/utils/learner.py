@@ -104,11 +104,11 @@ class Learner():
 
 		Action = np.ravel(Action)
 
-		self.clf = DecisionTreeClassifier(max_depth=100)
-                #self.clf = svm.LinearSVC()
+		# self.clf = DecisionTreeClassifier(max_depth=100)
+		self.clf = svm.LinearSVC()
 		#self.clf = DecisionTreeClassifier(max_depth=500)#svm.LinearSVC()
 		#self.clf = svm.SVC(kernel='rbf')
-                self.novel = svm.OneClassSVM()
+		self.novel = svm.OneClassSVM()
 		self.clf.C = 1e-4#1e-2
 
 		#self.clf.kernel = 'linear'

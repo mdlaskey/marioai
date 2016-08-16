@@ -67,16 +67,21 @@ class Supervise(MarioAgent):
 #            self.levelScene[11,13], self.trueJumpCounter)
 #        if (self.isEpisodeOver):
 #            return numpy.ones(5, int)            
-        if self.isLearning or self.count <= 6:
+        if self.count <= 6 or self.isLearning:
             self.action = numpy.zeros(6, int)
             self.action[5] = 1
             self.record = True
+        elif self.isLearning:
+            # actInt = self.should_take_action
+            actInt = self.should_take_action
+            self.action = self.int2bin(actInt)
+            self.record_action = True
+            self.actionTaken = actInt
         else:
             actInt = self.learner.getAction(self.obsArray.T)
             self.action = self.int2bin(actInt)
             self.record_action = True
             self.actionTaken = actInt
-        
         return self.action
         
         """if self.count <= 6:
@@ -108,12 +113,14 @@ class Supervise(MarioAgent):
             self.isEpisodeOver = True
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
+            self.obsArray = csr_matrix(self.obsArray) # delete this later (if it doesn't work)
             self.should_take_action = action            
             if(self.count > 5):
                 if self.isLearning:
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                    self.obsArray = csr_matrix(self.obsArray)
-                    self.states = vstack((self.states,self.obsArray.T))
+                    # self.obsArray = csr_matrix(self.obsArray)
+                    # self.states = vstack((self.states,self.obsArray.T))
+                    self.states = vstack((self.states,self.prev_obs.T))
                     self.human_input += 1
                     self.should_take_action = action
                 else:
@@ -129,8 +136,9 @@ class Supervise(MarioAgent):
                 #         self.prevMario = self.marioFloats[0]
                 #         self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 #         self.states = numpy.vstack((self.states,self.obsArray.T))
-                    
+            self.prev_obs = self.obsArray     
             self.count += 1
+            # self.prev_action = action
         # self._write_out(time.time() - start_time)
 
             #self.printLevelScene()
@@ -179,6 +187,9 @@ class Supervise(MarioAgent):
         self.kmm_state = numpy.zeros([1,self.STATE_DIM])
         self.weight = numpy.zeros(1)
         
+        self.count = 0
+
+    def reset_task(self):
         self.count = 0
 
     def printLevelScene(self):

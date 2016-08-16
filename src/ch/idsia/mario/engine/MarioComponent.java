@@ -415,6 +415,7 @@ public class MarioComponent extends JComponent implements Runnable, /*KeyListene
     public boolean[] getActionTaken(){
         //return expert.getAction(this);
         return actionTaken; 
+        
     }
 
 
