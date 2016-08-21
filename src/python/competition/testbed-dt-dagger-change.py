@@ -35,11 +35,13 @@ def main():
 
     results = [] 
     names = [] 
-
+    
+    with open('type.txt', 'w') as f:
+        f.write('dt')
     
     # # #test dagger
-    #iterations = 40
-    #rounds = 1
+    # iterations = 1
+    # rounds = 1
     iterations = 50
     rounds = 15
     #agent = Dagger(IT,useKMM = False)
@@ -57,6 +59,7 @@ def main():
     #T = Tester(agent, exp)
     #dagger_data, _, acc = T.test(rounds = rounds, iterations = iterations)
     
+    """
     agent = Supervise(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
@@ -66,7 +69,7 @@ def main():
     np.save('./data/sl_data.npy', sl_data)
     np.save('./data/acc.npy', acc)    
     
-    IPython.embed()
+    # IPython.embed()
 
     analysis = Analysis()
     analysis.get_perf(sup_data, range(iterations))
@@ -77,28 +80,27 @@ def main():
     acc_a.get_perf(acc, range(iterations))
     acc_a.plot(names=['Supervised Learning Acc.'], label='Accuracy', filename='./results/acc_plots.eps')
 
+
     """
-
-
     agent = Dagger(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    dagger_data, _, acc = T.test(rounds = rounds, iterations = iterations)
+    prefix = "dt-dagger-change"
+    dagger_data, _, acc = T.test(rounds = rounds, iterations = iterations, prefix = prefix)
 
-    np.save('./data/dagger_data.npy', dagger_data)
-    np.save('./data/acc.npy', acc)    
+    np.save('./data/dt-dagger-change-dagger_data.npy', dagger_data)
+    np.save('./data/dt-dagger-change-acc.npy', acc)    
     
-    IPython.embed()
+    # IPython.embed()
 
     analysis = Analysis()
     analysis.get_perf(dagger_data, range(iterations))
-    analysis.plot(names=['DAgger'], label='Reward', filename='./results/return_plots.eps')
+    analysis.plot(names=['DAgger'], label='Reward', filename='./results/dt-dagger-change-return_plots.eps')
 
     acc_a = Analysis()
     acc_a.get_perf(acc, range(iterations))
-    acc_a.plot(names=['DAgger Acc.'], label='Accuracy', filename='./results/acc_plots.eps')
+    acc_a.plot(names=['DAgger Acc.'], label='Accuracy', filename='./results/dt-dagger-change-acc_plots.eps')
 
-    """
     
     #agent = Supervise(IT,useKMM = False)
     #exp = EpisodicExperiment(task, agent) 
@@ -214,7 +216,7 @@ def main():
 
     plt.show()
     
-    IPython.embed()
+    # IPython.embed()
     f.close()           
        
 

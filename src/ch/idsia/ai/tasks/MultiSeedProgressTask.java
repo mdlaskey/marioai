@@ -35,6 +35,7 @@ public class MultiSeedProgressTask implements Task {
             EvaluationInfo result = results.get(0);
             distanceTravelled += result.computeDistancePassed();
         }
+        System.out.println("multi seed distance: " + distanceTravelled);
         distanceTravelled = distanceTravelled / numberOfSeeds;
         return new double[]{distanceTravelled};
     }

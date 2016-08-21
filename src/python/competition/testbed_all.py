@@ -56,7 +56,7 @@ def main():
     #exp = EpisodicExperiment(task, agent)
     #T = Tester(agent, exp)
     #dagger_data, _, acc = T.test(rounds = rounds, iterations = iterations)
-    
+     
     agent = Supervise(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)

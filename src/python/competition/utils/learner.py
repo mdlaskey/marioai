@@ -104,12 +104,25 @@ class Learner():
 
 		Action = np.ravel(Action)
 
-		# self.clf = DecisionTreeClassifier(max_depth=100)
-		self.clf = svm.LinearSVC()
-		#self.clf = DecisionTreeClassifier(max_depth=500)#svm.LinearSVC()
-		#self.clf = svm.SVC(kernel='rbf')
-		self.novel = svm.OneClassSVM()
-		self.clf.C = 1e-4#1e-2
+		with open('type.txt', 'r') as f:
+			line = f.readline()
+			print line
+			if line == 'svc':
+				print "svc"
+				self.clf = svm.LinearSVC()
+				self.clf.C = 1e-4#1e-2
+			elif line == 'ent': 
+				print "ent"
+				self.clf = DecisionTreeClassifier(criterion='entropy', max_depth=20)
+			else:
+				print "dt"
+				self.clf = DecisionTreeClassifier(max_depth=100)
+		# # self.clf = DecisionTreeClassifier(max_depth=100)
+		# self.clf = svm.LinearSVC()
+		# #self.clf = DecisionTreeClassifier(max_depth=500)#svm.LinearSVC()
+		# #self.clf = svm.SVC(kernel='rbf')
+		# self.novel = svm.OneClassSVM()
+		# self.clf.C = 1e-4#1e-2
 
 		#self.clf.kernel = 'linear'
 		

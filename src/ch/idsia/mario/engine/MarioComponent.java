@@ -178,11 +178,11 @@ public class MarioComponent extends JComponent implements Runnable, /*KeyListene
            
             actionTaken = expert.getAction(this);
 
-            System.out.println("Learner action :");
-            Environment.pb(action);
-            System.out.println("A-star action:");
-            Environment.pb(actionTaken);
-            System.out.println();
+            // System.out.println("Learner action :");
+            // Environment.pb(action);
+            // System.out.println("A-star action:");
+            // Environment.pb(actionTaken);
+            // System.out.println();
 
             if(action[5]){
                 action = actionTaken; 

@@ -29,7 +29,6 @@ class MarioTask(EpisodicTask):
 
     def getObservation(self):
         obs = EpisodicTask.getObservation(self)
-        IPython.embed()
         if len(obs) == MarioEnvironment.numberOfFitnessValues:
             self.reward = obs[1]
             self.status = obs[0]

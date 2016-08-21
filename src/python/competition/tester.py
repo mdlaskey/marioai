@@ -38,7 +38,7 @@ class Tester:
         self.agent = agent
         
  
-    def test(self,rounds=20,iterations=35):
+    def test(self,rounds=20,iterations=35, learning_samples=1, eval_samples=1,  prefix = ''):
         num_ask_help = np.zeros(iterations) 
         num_mismatch = np.zeros(iterations)
         avg_data = np.zeros(iterations) 
@@ -54,7 +54,7 @@ class Tester:
         avg_human_input_r = np.zeros((rounds, iterations))
         sup_data_r = np.zeros((rounds, iterations))
         acc_data = np.zeros((rounds, iterations))
-        self.exp.task.env.changeLevel()
+        # self.exp.task.env.changeLevel()
 
         for r in range(rounds):
 
@@ -114,11 +114,11 @@ class Tester:
                 a = Analysis()
                 a.get_perf(np.array([sup_data]), range(iterations))
                 a.get_perf(np.array([data]), range(iterations))
-                a.plot(names=['Supervisor', 'Supervised Learning'], label='Rewards', filename='./results/return_plot' + str(r) + '.eps')
+                a.plot(names=['Supervisor', 'Supervised Learning'], label='Rewards', filename='./results/' + prefix + 'return_plot' + str(r) + '.eps')
             elif self.agent._name == 'dagger':
                 a = Analysis()
                 a.get_perf(np.array([data]), range(iterations))
-                a.plot(names=['DAgger'], label='Reward', filename='./results/return_plot' + str(r) + '.eps')
+                a.plot(names=['DAgger'], label='Reward', filename='./results/' + prefix + 'return_plot' + str(r) + '.eps')
             # end plot single trial
 
 
@@ -127,7 +127,7 @@ class Tester:
             avg_precision = precision+avg_precision
             avg_human_input = avg_human_input + human_input
           
-            self.exp.task.env.changeLevel()
+            # self.exp.task.env.changeLevel()
        
         #IPython.embed()
         #self.record_actions = np.array(self.record_actions)

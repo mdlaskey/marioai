@@ -38,6 +38,7 @@ public class MultiDifficultyProgressTask implements Task {
             fitnesses[i + 1] = thisDistance;
             distanceTravelled += thisDistance;
         }
+        System.out.println("multi difficulty distance: " + distanceTravelled);
         distanceTravelled = distanceTravelled / difficulties.length;
         fitnesses[0] = distanceTravelled;
         return fitnesses;

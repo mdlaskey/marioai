@@ -49,6 +49,7 @@ public class EvaluationInfo
 
     public double computeDistancePassed()
     {
+        // return lengthOfLevelPassedCells;
         return lengthOfLevelPassedPhys;
     }
 

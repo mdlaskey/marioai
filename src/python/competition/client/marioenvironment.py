@@ -14,12 +14,12 @@ class MarioEnvironment(TCPEnvironment):
     creaturesEnabled = True
     initMarioMode = 2
     levelSeed = 1
-    levelLength = 4200
-    timeLimit = 3#10#60#40
+    levelLength = 4200 / 16.0
+    timeLimit = 10#10#60#40
     fastTCP = False
   
     # Other settings
-    visualization = True
+    visualization = False
     otherServerArgs = ""
     numberOfFitnessValues = 5
 

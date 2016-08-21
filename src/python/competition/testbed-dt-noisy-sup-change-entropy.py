@@ -36,10 +36,13 @@ def main():
     results = [] 
     names = [] 
 
+    with open('type.txt', 'w') as f:
+        f.write('ent')
     
     # # #test dagger
-    #iterations = 40
-    #rounds = 1
+    # iterations = 1
+    # rounds = 1
+    
     iterations = 50
     rounds = 15
     #agent = Dagger(IT,useKMM = False)
@@ -60,22 +63,23 @@ def main():
     agent = Supervise(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    sl_data, sup_data, acc = T.test(rounds = rounds, iterations = iterations)
+    prefix = 'dt-noisy-sup-change-entropy'
+    sl_data, sup_data, acc = T.test(rounds = rounds, iterations = iterations, prefix = prefix)
 
-    np.save('./data/sup_data.npy', sup_data)
-    np.save('./data/sl_data.npy', sl_data)
-    np.save('./data/acc.npy', acc)    
+    np.save('./data/' + prefix + '-sup_data.npy', sup_data)
+    np.save('./data/' + prefix + '-sl_data.npy', sl_data)
+    np.save('./data/' + prefix + '-acc.npy', acc)    
     
-    IPython.embed()
+    # IPython.embed()
 
     analysis = Analysis()
     analysis.get_perf(sup_data, range(iterations))
     analysis.get_perf(sl_data, range(iterations))
-    analysis.plot(names=['Supervisor', 'Supervised Learning'], label='Reward', filename='./results/return_plots.eps')#, ylims=[0, 1600])
+    analysis.plot(names=['Supervisor', 'Supervised Learning'], label='Reward', filename='./results/' + prefix + '-return_plots.eps')#, ylims=[0, 1600])
 
     acc_a = Analysis()
     acc_a.get_perf(acc, range(iterations))
-    acc_a.plot(names=['Supervised Learning Acc.'], label='Accuracy', filename='./results/acc_plots.eps')
+    acc_a.plot(names=['Supervised Learning Acc.'], label='Accuracy', filename='./results/' + prefix + '-acc_plots.eps')
 
     """
 
@@ -214,7 +218,7 @@ def main():
 
     plt.show()
     
-    IPython.embed()
+    # IPython.embed()
     f.close()           
        
 
