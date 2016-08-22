@@ -55,6 +55,7 @@ class Dagger(MarioAgent):
         self.human_input = 0; 
         self.prevMario = 0.0
         self._name = 'dagger'
+        self.isLearning = True
       
         
     def loadModel(self):
@@ -96,29 +97,14 @@ class Dagger(MarioAgent):
             if(self.count > 5):
                 if(self.initialTraining):
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                    # self.obsArray = csr_matrix(self.obsArray)
-                    # self.states = vstack((self.states,self.obsArray.T))
                     self.states = vstack((self.states,self.prev_obs.T))
-                else:
+                    self.human_input += 1
+                elif self.isLearning:
                     if((self.actionTaken != action)):
                         self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                        # self.obsArray = csr_matrix(self.obsArray)
-                        # self.states = vstack((self.states,self.obsArray.T))
                         self.states = vstack((self.states,self.prev_obs.T))
-
+                        self.human_input += 1
                         
-                #     self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                #     self.obsArray = csr_matrix(self.obsArray)
-                #     self.states = vstack((self.states,self.obsArray.T))
-                # else:#elif(self.record_action and self.prevMario != self.marioFloats[0]): 
-                #     # self.obsArray = csr_matrix(self.obsArray)
-                #     # obsArray_csr = csr_matrix(self.obsArray)
-                #     # self.kmm_state = vstack((self.kmm_state,obsArray_csr.T))
-                #     if True:#if((self.actionTaken != action)):
-                #         #self.prevMario = self.marioFloats[0]
-                #         self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                #         self.states = numpy.vstack((self.states,self.obsArray.T))
-
             self.human_input += 1
             self.prev_obs = self.obsArray            
             self.count += 1

@@ -44,33 +44,89 @@ class EpisodicExperiment(Experiment):
             all_rewards.append(rewards)
         return all_rewards
 
-    def doEpisodes(self, number = 1):
+
+    def _run_dagger_traj(self, learning_samples, eval_samples):
+        if self.agent.initialTraining:
+            self.agent.isLearning = True
+            self._runTrajectory(1)
+            self.agent.isLearning = False
+        else:
+            self.agent.isLearning = True
+            
+            all_rewards = []
+            for _ in range(max(learning_samples, eval_samples)):
+                if _ >= learning_samples:
+                    self.agent.isLearning  = False
+                else:
+                    print "Learning"
+                rewards = []
+                self.stepid = 0
+                self.agent.newEpisode()
+                self.task.reset()
+                self.agent.reset_task()
+                while not self.task.isFinished():
+                    r = self._oneInteraction()
+                    rewards.append(r)
+                if _ < eval_samples:
+                    print "evaluating"
+                    all_rewards.append(rewards)
+                print "\n\n\n"
+            self.agent.updateModel()
+
+            return all_rewards, None
+
+    def _run_supervise_traj(self, learning_samples, eval_samples):
+        print "Supervised learning starts here"
+        if self.agent.initialTraining:
+            print "INITIAL TRAINING"
+            self.agent.isLearning = True
+            self._runTrajectory(1)
+            self.agent.isLearning = False
+        else:
+            all_rewards = self._runTrajectory(eval_samples)
+
+            self.agent.isLearning = True
+            sup_rewards = self._runTrajectory(learning_samples)
+            self.agent.isLearning = False
+
+            self.agent.updateModel()
+            print "REWARD LENGTH: " + str(len(all_rewards))
+            print "SUP LENGTH: " + str(len(sup_rewards))
+            return all_rewards, sup_rewards
+
+    def doEpisodes(self, number = 1, learning_samples=1, eval_samples=1):
         """ returns the rewards of each step as a list """
         all_rewards = []
         self.task.env.changeLevel()
 
-        if self.agent.initialTraining or self.agent._name == 'dagger':
-            print "Running initial training"
-            self.agent.isLearning = True
-            all_rewards = self._runTrajectory(number)
-            if not self.agent.initialTraining:
-                self.agent.updateModel()
-            self.agent.isLearning = False
-            print "REWARDS: " + str(all_rewards)
-            return all_rewards, None
+        self.learning_samples = learning_samples
+        self.eval_samples = eval_samples
+
+        #if self.agent.initialTraining or self.agent._name == 'dagger':
+        if self.agent._name == 'dagger':
+            # print "Running initial training"
+            # self.agent.isLearning = True
+            # all_rewards = self._runTrajectory(number)
+            # if not self.agent.initialTraining:
+            #     self.agent.updateModel()
+            # self.agent.isLearning = False
+            # print "REWARDS: " + str(all_rewards)
+            # return all_rewards, None
+            return self._run_dagger_traj(self.learning_samples, self.eval_samples)
         else:
             # Must be supervise here
             # run the sample trial
-            all_rewards = self._runTrajectory(number)
+            # all_rewards = self._runTrajectory(eval_samples)
 
-            # run the learning trial
-            self.agent.isLearning = True
-            sup_rewards = self._runTrajectory(1)
-            self.agent.isLearning = False
-            self.agent.updateModel()
-            print sup_rewards
-            # return reward from sampled trial
-            return all_rewards, sup_rewards
+            # # run the learning trial
+            # self.agent.isLearning = True
+            # sup_rewards = self._runTrajectory(learning_samples)
+            # self.agent.isLearning = False
+            # self.agent.updateModel()
+            # print sup_rewards
+            # # return reward from sampled trial
+            # return all_rewards, sup_rewards
+            return self._run_supervise_traj(self.learning_samples, self.eval_samples)
 
 
         # # DO THE SUPERVISED TRAJECTORY FIRST

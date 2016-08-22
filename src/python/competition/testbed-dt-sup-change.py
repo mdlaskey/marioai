@@ -45,6 +45,9 @@ def main():
     
     iterations = 50
     rounds = 15
+    learning_samples = 2
+    eval_samples = 3
+
     #agent = Dagger(IT,useKMM = False)
     #exp = EpisodicExperiment(task, agent) 
     #T = Tester(agent,exp)
@@ -64,7 +67,7 @@ def main():
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
     prefix = 'dt-sup-change'
-    sl_data, sup_data, acc = T.test(rounds = rounds, iterations = iterations, prefix = prefix)
+    sl_data, sup_data, acc = T.test(rounds = rounds, iterations = iterations, learning_samples=learning_samples, eval_samples=eval_samples, prefix = prefix)
 
     np.save('./data/dt-sup-change-sup_data.npy', sup_data)
     np.save('./data/dt-sup-change-sl_data.npy', sl_data)

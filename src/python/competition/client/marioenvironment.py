@@ -19,7 +19,7 @@ class MarioEnvironment(TCPEnvironment):
     fastTCP = False
   
     # Other settings
-    visualization = False
+    visualization = True
     otherServerArgs = ""
     numberOfFitnessValues = 5
 

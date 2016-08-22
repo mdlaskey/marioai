@@ -77,10 +77,14 @@ class Tester:
             acc = np.zeros(iterations)
             for t in range(iterations):
                 
-                rewards, sup_rewards = self.exp.doEpisodes(1)
-                data[t] = rewards[0][-1]             # taking from the first sample
+                rewards, sup_rewards = self.exp.doEpisodes(1, learning_samples, eval_samples)
+                rewards = np.mean(rewards, axis=0)
+                data[t] = rewards[-1]
+                # data[t] = rewards[0][-1]             # taking from the first sample
                 if self.agent._name == 'supervise':
-                    sup_data[t] = sup_rewards[0][-1]    # taking from the first sample
+                    sup_rewards = np.mean(sup_rewards, axis=0)
+                    sup_data[t] = sup_rewards[-1]
+                    #sup_data[t] = sup_rewards[0][-1]    # taking from the first sample
                 #self.agent.updateModel()
                 acc[t] = self.agent.learner.accs
 
@@ -91,11 +95,12 @@ class Tester:
                     rewards = self.exp.doEpisodes(1)
                     self.agent.off = False
 
-                size = len(rewards[0])
-                
+                # size = len(rewards[0])
+                size = len(rewards)
                     
-                distances[t] = rewards[0][size-1]
-               
+                #distances[t] = rewards[0][size-1]
+                distances[t] = rewards[size-1]
+
                 precision[t] = self.agent.learner.getPrecision()
                 human_input[t] = self.agent.getNumHumanInput()
                 self.agent.reset()

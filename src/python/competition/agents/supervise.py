@@ -117,6 +117,7 @@ class Supervise(MarioAgent):
             self.should_take_action = action            
             if(self.count > 5):
                 if self.isLearning:
+                    # print "Learning: " + str(self.human_input)
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
                     # self.obsArray = csr_matrix(self.obsArray)
                     # self.states = vstack((self.states,self.obsArray.T))

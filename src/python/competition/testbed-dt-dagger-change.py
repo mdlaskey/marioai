@@ -25,6 +25,12 @@ from analysis import Analysis
 ITERATIONS = 35
 IT = False
 
+ITERATIONS = 35
+IT = False
+learning_samples = 2
+eval_samples = 3
+
+
 def main():
     f = open('try_3.txt','w')
     g = open('accs.txt', 'w')
@@ -44,6 +50,8 @@ def main():
     # rounds = 1
     iterations = 50
     rounds = 15
+    learning_samples = 2
+    eval_samples = 3
     #agent = Dagger(IT,useKMM = False)
     #exp = EpisodicExperiment(task, agent) 
     #T = Tester(agent,exp)
@@ -86,7 +94,7 @@ def main():
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
     prefix = "dt-dagger-change"
-    dagger_data, _, acc = T.test(rounds = rounds, iterations = iterations, prefix = prefix)
+    dagger_data, _, acc = T.test(rounds = rounds, iterations = iterations, learning_samples = learning_samples, eval_samples = eval_samples, prefix = prefix)
 
     np.save('./data/dt-dagger-change-dagger_data.npy', dagger_data)
     np.save('./data/dt-dagger-change-acc.npy', acc)    
