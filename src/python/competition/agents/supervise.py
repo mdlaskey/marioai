@@ -8,7 +8,7 @@ from utils.learner import Learner
 from scipy.sparse import csr_matrix
 from scipy.sparse import vstack
 import time
-
+import numpy as np
 class Supervise(MarioAgent):
     """ In fact the Python twin of the
         corresponding Java ForwardAgent.
@@ -31,10 +31,10 @@ class Supervise(MarioAgent):
 
     def getTraining(self):
         return self.initialTraining
-    def reset(self):
-        self.isEpisodeOver = False
-        self.trueJumpCounter = 0;
-        self.trueSpeedCounter = 0;
+    # def reset(self):
+    #     self.isEpisodeOver = False
+    #     self.trueJumpCounter = 0;
+    #     self.trueSpeedCounter = 0;
         
     def __init__(self,initialTraining,useKMM = False):
         """Constructor"""
@@ -55,7 +55,6 @@ class Supervise(MarioAgent):
         self.prevMario = 0.0
         self._name = 'supervise'
         self.isLearning = False
-      
         
     def loadModel(self):
         self.learner.Load()
@@ -67,22 +66,43 @@ class Supervise(MarioAgent):
 #            % (self.mayMarioJump, self.isMarioOnGround, self.levelScene[11,12], \
 #            self.levelScene[11,13], self.trueJumpCounter)
 #        if (self.isEpisodeOver):
-#            return numpy.ones(5, int)
-        if self.isLearning or self.count <= 6:
-            actInt = self.should_take_action
-            self.action = self.int2bin(actInt)
-            self.actionTaken = actInt
-            self.record_action = True
-            #self.action[5] = 1
-            #self.record_action = True;
+#            return numpy.ones(5, int)            
+        if self.count <= 6 or self.isLearning:
+            self.action = numpy.zeros(6, int)
+            self.action[5] = 1
+            self.record = True
+        # elif self.isLearning:
+            # actInt = self.should_take_action
+            # actInt = self.should_take_action
+            # self.action = self.int2bin(actInt)
+            # self.record_action = True
+            # self.actionTaken = actInt
         else:
             actInt = self.learner.getAction(self.obsArray.T)
             self.action = self.int2bin(actInt)
             self.record_action = True
             self.actionTaken = actInt
-            # print "Should taken: " + str(self.should_take_action)
-            # print "Taken: " + str(self.actionTaken)
         return self.action
+        
+        """if self.count <= 6:
+            self.action = numpy.zeros(6, int)
+            self.action[5] = 1
+            self.record=True
+        elif self.isLearning or self.count <= 6:
+            #self.action = numpy.zeros(6, int)
+            #self.action[5] = 1
+            self.action = self.int2bin(self.should_take_action)
+            self.record_action = True;
+        else:
+            actInt = self.learner.getAction(self.obsArray.T)
+            self.record_actions.append(actInt[0])
+            self.action = self.int2bin(10)
+            self.action = self.int2bin(actInt)
+            self.record_action = True
+            self.actionTaken = actInt
+            print "Should taken: " + str(self.should_take_action)
+            print "Taken: " + str(self.actionTaken[0])
+        return self.action"""
 
 
     def integrateObservation(self, obs):
@@ -93,16 +113,22 @@ class Supervise(MarioAgent):
             self.isEpisodeOver = True
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
-            self.should_take_action = action
+            self.obsArray = csr_matrix(self.obsArray) # delete this later (if it doesn't work)
+            self.should_take_action = action            
             if(self.count > 5):
                 if self.isLearning:
+                    # print "Learning: " + str(self.human_input)
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                    self.obsArray = csr_matrix(self.obsArray)
-                    self.states = vstack((self.states,self.obsArray.T))
+                    # self.obsArray = csr_matrix(self.obsArray)
+                    # self.states = vstack((self.states,self.obsArray.T))
+                    self.states = vstack((self.states,self.prev_obs.T))
                     self.human_input += 1
-                else:
                     self.should_take_action = action
-
+                else:
+                    if self.count > 6:
+                        if action != self.actionTaken:
+                            self.mistakes += 1
+                    self.should_take_action = action
                 # if(self.initialTraining):
                 #     self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 #     self.obsArray = csr_matrix(self.obsArray)
@@ -114,8 +140,9 @@ class Supervise(MarioAgent):
                 #         self.prevMario = self.marioFloats[0]
                 #         self.actions = numpy.vstack((self.actions,numpy.array([action])))
                 #         self.states = numpy.vstack((self.states,self.obsArray.T))
-                    
+            self.prev_obs = self.obsArray     
             self.count += 1
+            # self.prev_action = action
         # self._write_out(time.time() - start_time)
 
             #self.printLevelScene()
@@ -163,8 +190,24 @@ class Supervise(MarioAgent):
         self.states  = numpy.zeros([1,self.STATE_DIM])
         self.kmm_state = numpy.zeros([1,self.STATE_DIM])
         self.weight = numpy.zeros(1)
-
+        
         self.count = 0
+        self.mistakes = 0
+
+        print "RESTSETSETSETTSETSETSETasdfasdfasfasdfasf"
+
+    def reset_task(self):
+        self.count = 0
+        self.mistakes = 0
+
+    def get_loss(self):
+        try:
+            return self.mistakes / float(self.count)
+        except ZeroDivisionError:
+            return -1.0
+
+    def get_j(self):
+        return self.mistakes
 
     def printLevelScene(self):
         ret = ""

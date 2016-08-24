@@ -3,6 +3,7 @@ __date__ = "$May 7, 2009 12:47:18 PM$"
 
 from client.marioenvironment import MarioEnvironment
 from episodictask import EpisodicTask
+import IPython
 
 if __name__ != "__main__":
     print "Loading %s ..." % __name__;

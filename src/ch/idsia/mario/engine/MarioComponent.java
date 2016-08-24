@@ -55,7 +55,6 @@ public class MarioComponent extends JComponent implements Runnable, /*KeyListene
     private Mario mario = null;
     private LevelScene levelScene = null;
     private boolean[] actionTaken = new boolean[5];
-    
 
     public MarioComponent(int width, int height) {
         adjustFPS();
@@ -178,10 +177,23 @@ public class MarioComponent extends JComponent implements Runnable, /*KeyListene
             boolean[] action = agent.getAction(this/*DummyEnvironment*/);
            
             actionTaken = expert.getAction(this);
+
+            // System.out.println("Learner action :");
+            // Environment.pb(action);
+            // System.out.println("A-star action:");
+            // Environment.pb(actionTaken);
+            // System.out.println();
+
             if(action[5]){
                 action = actionTaken; 
+            } else {
+                boolean[] tmp = new boolean[5];
+                for (int i = 0; i < 5; i++) {
+                    tmp[i] = action[i];
+                }
+                action = tmp;
             }
-            //System.err.println(action)
+            // System.err.println(boolOutput(action));
             if (action != null)
             {
                 for (int i = 0; i < Environment.numberOfButtons; ++i)
@@ -401,9 +413,12 @@ public class MarioComponent extends JComponent implements Runnable, /*KeyListene
 
 
     public boolean[] getActionTaken(){
-        return expert.getAction(this);
-        //return actionTaken; 
+
+        //return expert.getAction(this);
+        return actionTaken; 
+        
     }
+
 
     public byte[][] getLevelSceneObservation() {
         if (scene instanceof LevelScene)

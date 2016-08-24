@@ -6,6 +6,7 @@ import cPickle as pickle
 from numpy import linalg as LA
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.cross_validation import train_test_split
 from sklearn import preprocessing
 from sklearn import linear_model
 from sklearn import metrics
@@ -31,6 +32,7 @@ class Learner():
 	
 	def __init__(self,sigma=1.0):
 		self.ahqp_solver = AHQP(sigma)
+		self.linear = False
 
 	def Load(self, gamma=1e-3):
 		self.States = pickle.load(open('states.p', 'rb'))
@@ -104,24 +106,57 @@ class Learner():
 
 		Action = np.ravel(Action)
 
-		self.clf = DecisionTreeClassifier(max_depth=500)#svm.LinearSVC()
-		#self.clf = svm.SVC(kernel='rbf')
-                self.novel = svm.OneClassSVM()
-		self.clf.C = 1e-4#1e-2
+		if self.linear:
+			print "SVC"
+			self.clf = svm.LinearSVC()
+			self.clf.C = 1.e-4
+		else:
+			print "Decision Tree"
+			self.clf = DecisionTreeClassifier(max_depth=100)
+
+
+		# with open('type.txt', 'r') as f:
+		# 	line = f.readline()
+		# 	# print line
+		# 	if line == 'svc':
+		# 		# print "svc"
+		# 		self.clf = svm.LinearSVC()
+		# 		self.clf.C = 1e-4#1e-2
+		# 	elif line == 'ent': 
+		# 		# print "ent"
+		# 		self.clf = DecisionTreeClassifier(criterion='entropy', max_depth=20)
+		# 	else:
+		# 		# print "dt"
+		# 		self.clf = DecisionTreeClassifier(max_depth=100)
+		# # self.clf = DecisionTreeClassifier(max_depth=100)
+		# self.clf = svm.LinearSVC()
+		# #self.clf = DecisionTreeClassifier(max_depth=500)#svm.LinearSVC()
+		# #self.clf = svm.SVC(kernel='rbf')
+		# self.novel = svm.OneClassSVM()
+		# self.clf.C = 1e-4#1e-2
 
 		#self.clf.kernel = 'linear'
 		
+		states_train, states_test, actions_train, actions_test = train_test_split(
+			States, Action, test_size=0.2)
+
 		if(self.useKMM):
 			self.Weights = np.ravel(self.Weights)
 			self.clf.fit(States,Action,self.Weights)
-		else:
+		elif States.shape[0] > 1:
 			print "Training on: " + str(States.shape[0]) + " examples"
-			self.clf.fit(States, Action)
-			acc = self.clf.score(States, Action)
-                        self.accs = acc
+			self.clf.fit(states_train, actions_train)
+			acc = self.clf.score(states_train, actions_train)
+			test_acc = self.clf.score(states_test, actions_test)
+			self.accs = acc
+			self.test_accs = test_acc
 			with open('accs.txt', 'a') as f:
-				f.write(str(States.shape[0]) + " examples: " + str(acc) + "\n")
+				f.write(str(states_train.shape[0]) + " examples: " + str(acc) + "\n")
+			with open('test_accs.txt', 'a') as f:
+				f.write(str(states_test.shape[0]) + " examples: " + str(test_acc) + "\n")
+
 			print "ACCURACY: " + str(acc)
+			print "TEST ACC: " + str(test_acc)
 		#SVM parameters computed via cross validation
 	
 	
@@ -136,7 +171,7 @@ class Learner():
 		# self.novel.fit(supStatesClean)
 
 
-		if (self.verbose or self.use_AHQP):
+		if (self.verbose or self.use_AHQP) and States.shape[0] > 1:
 			self.debugPolicy(States, Action)
 
 
@@ -151,7 +186,7 @@ class Learner():
 	def getScoreNovel(self, States):
 
 
-		print self.novel.gamma
+		# print self.novel.gamma
 		
 		
 		#self.
@@ -183,8 +218,8 @@ class Learner():
 			else:
 				self.labels[i] = 1.0
 			classes[Action[i]][2] = classes[Action[i]][1] / classes[Action[i]][0]
-		for d in classes:
-			print d, classes[d]
+		#for d in classes:
+			# print d, classes[d]
 
 		self.precision = self.clf.score(States, Action)
 

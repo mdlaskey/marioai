@@ -57,4 +57,13 @@ public interface Environment
 
     public String getBitmapLevelObservation();
 
+    public static void pb(boolean[] b) {
+        String s = "{ ";
+        for (int i = 0; i < b.length; i++) {
+            s += (b[i] ? 1 : 0) + ", ";
+        }
+        s += " }";
+        System.out.println(s);
+    }
+
 }

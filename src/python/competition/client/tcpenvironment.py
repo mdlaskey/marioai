@@ -3,6 +3,7 @@ __date__ = "$May 13, 2009 1:25:30 AM$"
 
 from client import Client
 from environment import Environment
+import IPython
 from utils.dataadaptor import show
 
 class TCPEnvironment(Environment):
@@ -16,6 +17,7 @@ class TCPEnvironment(Environment):
             print "TCPENV: agentName ", agentName
         self.client = Client(host, port, agentName)
         self.connected = True
+        self.BASE_LEVEL = 1
 
     def isAvailable(self):
         """returns the availability status of the environment"""
@@ -33,7 +35,6 @@ class TCPEnvironment(Environment):
         
         data = self.client.recvData()
         data = self.to_unicode_or_bust(data)
-                
         if data == "ciao":
             self.client.disconnect()
             self.connected = False            

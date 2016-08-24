@@ -202,7 +202,6 @@ def extractObservation(data):
             k+=1
 
 
-
         while k < len(data):
             enemiesFloats.append(float(data[k]))
             k += 1
@@ -219,7 +218,7 @@ def extractObservation(data):
             pastActions.pop(0)
             pastActions.append(action_vec)
 
-
+        # IPython.embed()
         obs_array = asmbleObsv(pastLevels,pastActions,mario_state)
         return (mayMarioJump, isMarioOnGround, marioFloats, enemiesFloats, levelScene, dummy,action,obs_array)
     else:

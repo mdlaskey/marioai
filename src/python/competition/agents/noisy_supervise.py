@@ -8,9 +8,9 @@ from utils.learner import Learner
 from scipy.sparse import csr_matrix
 from scipy.sparse import vstack
 import time
+import random
 import numpy as np
-
-class Dagger(MarioAgent):
+class NoisySupervise(MarioAgent):
     """ In fact the Python twin of the
         corresponding Java ForwardAgent.
     """
@@ -32,11 +32,12 @@ class Dagger(MarioAgent):
 
     def getTraining(self):
         return self.initialTraining
-    def reset(self):
-        self.isEpisodeOver = False
-        self.trueJumpCounter = 0;
-        self.trueSpeedCounter = 0;
+    # def reset(self):
+    #     self.isEpisodeOver = False
+    #     self.trueJumpCounter = 0;
+    #     self.trueSpeedCounter = 0;
         
+
     def __init__(self,initialTraining,useKMM = False):
         """Constructor"""
         self.trueJumpCounter = 0
@@ -54,9 +55,8 @@ class Dagger(MarioAgent):
         self.count = 0; 
         self.human_input = 0; 
         self.prevMario = 0.0
-        self._name = 'dagger'
-        self.isLearning = True
-      
+        self._name = 'supervise'
+        self.isLearning = False
         
     def loadModel(self):
         self.learner.Load()
@@ -68,21 +68,63 @@ class Dagger(MarioAgent):
 #            % (self.mayMarioJump, self.isMarioOnGround, self.levelScene[11,12], \
 #            self.levelScene[11,13], self.trueJumpCounter)
 #        if (self.isEpisodeOver):
-#            return numpy.ones(5, int)
-       
-        if self.initialTraining or self.count <= 6:
-            self.action = np.zeros(6, int)
+#            return numpy.ones(5, int)            
+        if self.isLearning:
+            r = random.random()
+            if r > .3:
+                self.action = numpy.zeros(6, int)
+                self.action[5] = 1
+                self.record = True
+                # actInt = -1
+            else:
+                actInt = random.randint(0, 2 ** 5 - 1)
+                self.action = self.int2bin(actInt)
+                self.record_action = True
+                # self.actionTaken = actInt
+        elif self.count <= 6:
+            self.action = numpy.zeros(6, int)
             self.action[5] = 1
-            self.record_action = True; 
-        else: 
-
+            self.record = True
+            # actInt = -1
+        # elif self.isLearning:
+        #     r = random.random()
+        #     if r > .2:
+        #         actInt = self.should_take_action
+        #         self.action = self.int2bin(actInt)
+        #         self.record_action = True
+        #         self.actionTaken = actInt
+        #     else:
+        #         actInt = random.randint(0, 2 ** 5 - 1)
+        #         self.action = self.int2bin(actInt)
+        #         self.record_action = True
+        #         self.actionTaken = actInt
+        else:
             actInt = self.learner.getAction(self.obsArray.T)
             self.action = self.int2bin(actInt)
-            # self.human_input += 1
             self.record_action = True
             self.actionTaken = actInt
-
         return self.action
+        
+        """if self.count <= 6:
+            self.action = numpy.zeros(6, int)
+            self.action[5] = 1
+            self.record=True
+        elif self.isLearning or self.count <= 6:
+            #self.action = numpy.zeros(6, int)
+            #self.action[5] = 1
+            self.action = self.int2bin(self.should_take_action)
+            self.record_action = True;
+        else:
+            actInt = self.learner.getAction(self.obsArray.T)
+            self.record_actions.append(actInt[0])
+            self.action = self.int2bin(10)
+            self.action = self.int2bin(actInt)
+            self.record_action = True
+            self.actionTaken = actInt
+            print "Should taken: " + str(self.should_take_action)
+            print "Taken: " + str(self.actionTaken[0])
+        return self.action"""
+
 
     def integrateObservation(self, obs):
         """This method stores the observation inside the agent"""
@@ -92,28 +134,40 @@ class Dagger(MarioAgent):
             self.isEpisodeOver = True
         else:
             self.mayMarioJump, self.isMarioOnGround, self.marioFloats, self.enemiesFloats, self.levelScene, dummy,action,self.obsArray = obs
-            self.obsArray = csr_matrix(self.obsArray)
+            self.obsArray = csr_matrix(self.obsArray) # delete this later (if it doesn't work)
             self.should_take_action = action
+
             if(self.count > 5):
-                if(self.initialTraining):
+                if self.isLearning:
                     self.actions = numpy.vstack((self.actions,numpy.array([action])))
+                    # self.obsArray = csr_matrix(self.obsArray)
+                    # self.states = vstack((self.states,self.obsArray.T))
                     self.states = vstack((self.states,self.prev_obs.T))
                     self.human_input += 1
-                elif self.isLearning:
+                    self.should_take_action = action
+                else:
                     if self.count > 6 and action != self.actionTaken:
-                        self.mistakes += 1
-                        
-                    if((self.actionTaken != action)):
-                        self.actions = numpy.vstack((self.actions,numpy.array([action])))
-                        self.states = vstack((self.states,self.prev_obs.T))
-                        self.human_input += 1
-                        
-            self.human_input += 1
-            self.prev_obs = self.obsArray            
+                            self.mistakes += 1
+
+
+                    self.should_take_action = action
+                # if(self.initialTraining):
+                #     self.actions = numpy.vstack((self.actions,numpy.array([action])))
+                #     self.obsArray = csr_matrix(self.obsArray)
+                #     self.states = vstack((self.states,self.obsArray.T))
+                # else:#elif(self.record_action and self.prevMario != self.marioFloats[0]): 
+                #     obsArray_csr = csr_matrix(self.obsArray)
+                #     self.kmm_state = vstack((self.kmm_state,obsArray_csr.T))
+                #     if True:#if((self.actionTaken != action)):
+                #         self.prevMario = self.marioFloats[0]
+                #         self.actions = numpy.vstack((self.actions,numpy.array([action])))
+                #         self.states = numpy.vstack((self.states,self.obsArray.T))
+            self.prev_obs = self.obsArray     
             self.count += 1
-            #self.printLevelScene()
+            # self.prev_action = action
         # self._write_out(time.time() - start_time)
 
+            #self.printLevelScene()
     def int2bin(self,num):
         action = numpy.zeros(6)
         actStr = numpy.binary_repr(num)
@@ -121,9 +175,9 @@ class Dagger(MarioAgent):
         for i in range(len(actStr)):
             action[i] = float(actStr[len(actStr)-1-i])
         return action 
-
+    
     def _write_out(self, time):
-        filename = 'dagger_times.txt'
+        filename = 'supervise_times.txt'
         with open(filename, 'a') as f:
             f.write("time: " + str(time) + "\n")
         return
@@ -132,7 +186,7 @@ class Dagger(MarioAgent):
         # print self.states
         # print self.actions 
 
-        self.learner.updateModel(self.states,self.actions,None)
+        self.learner.updateModel(self.states,self.actions,None)#self.kmm_state)
         self.dataAdded = self.actions.shape[0]
 
     def getDataAdded(self):
@@ -151,14 +205,14 @@ class Dagger(MarioAgent):
         return self.learner.getNumData()
         
     def getName(self):
-        return "Dagger"
+        return "Supervise"
         
     def reset(self):
         self.actions = numpy.array([0])
         self.states  = numpy.zeros([1,self.STATE_DIM])
         self.kmm_state = numpy.zeros([1,self.STATE_DIM])
         self.weight = numpy.zeros(1)
-
+        
         self.count = 0
         self.mistakes = 0
 
@@ -170,11 +224,11 @@ class Dagger(MarioAgent):
         try:
             return self.mistakes / float(self.count)
         except ZeroDivisionError:
-            return -1.0 
+            return -1.0
 
     def get_j(self):
         return self.mistakes
-        
+            
     def printLevelScene(self):
         ret = ""
         for x in range(22):

@@ -34,6 +34,7 @@ public class StochasticProgressTask implements Task {
             EvaluationInfo result = results.get(0);
             distanceTravelled += result.computeDistancePassed();
         }
+        System.out.println("stochastic distance: " + distanceTravelled);
         distanceTravelled = distanceTravelled / numberOfSeeds;
         return new double[]{distanceTravelled};
     }

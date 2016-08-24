@@ -33,6 +33,7 @@ public class ProgressTask implements Task {
             //    Easy.save(options.getAgent(), options.getAgent().getName() + ".xml");
             distanceTravelled += result.computeDistancePassed();
         }
+        System.out.println("distance: " + distanceTravelled);
         distanceTravelled = distanceTravelled / results.size();
         return new double[]{distanceTravelled};
     }
