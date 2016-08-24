@@ -56,6 +56,7 @@ class Tester:
         avg_human_input_r = np.zeros((rounds, iterations))
         sup_data_r = np.zeros((rounds, iterations))
         acc_data = np.zeros((rounds, iterations))
+        test_acc_data = np.zeros((rounds, iterations))
         avg_losses_r = np.zeros((rounds, iterations))
         avg_js_r = np.zeros((rounds, iterations))
         # self.exp.task.env.changeLevel()
@@ -81,6 +82,7 @@ class Tester:
             precision = np.zeros(iterations)
             human_input = np.zeros(iterations)
             acc = np.zeros(iterations)
+            test_acc = np.zeros(iterations)
             for t in range(iterations):
                 
                 rewards, loss, j, sup_rewards,  = self.exp.doEpisodes(1, learning_samples, eval_samples)
@@ -100,6 +102,7 @@ class Tester:
                     #sup_data[t] = sup_rewards[0][-1]    # taking from the first sample
                 #self.agent.updateModel()
                 acc[t] = self.agent.learner.accs
+                test_acc[t] = self.agent.learner.test_accs
 
                 # if(self.agent._getName() == 'Ahude'):
                 #     num_help[t] = self.agent.getNumHelp()
@@ -130,6 +133,7 @@ class Tester:
             if self.agent._name == 'supervise':
                 sup_data_r[r, :] = sup_data
             acc_data[r, :] = acc
+            test_acc_data[r, :] = test_acc
 
 
             # plot single trial
@@ -139,6 +143,7 @@ class Tester:
                 np.save('./data/' + prefix + 'sl_reward_round' + str(r) + '.npy', data)
                 np.save('./data/' + prefix + 'sup_reward_round' + str(r) + '.npy', sup_data)
                 np.save('./data/' + prefix + 'acc_round' + str(r) + '.npy', acc)
+                np.save('./data/' + prefix + 'test_acc_round' + str(r) + '.npy', test_acc)
                 np.save('./data/' + prefix + 'js_round' + str(r) + '.npy', js)
 
                 a = Analysis()
@@ -160,6 +165,7 @@ class Tester:
                 np.save('./data/' + prefix + 'loss_round' + str(r) + '.npy', losses)
                 np.save('./data/' + prefix + 'dagger_reward_round' + str(r) + '.npy', data)
                 np.save('./data/' + prefix + 'acc_round' + str(r) + '.npy', acc)
+                np.save('./data/' + prefix + 'test_acc_round' + str(r) + '.npy', test_acc)
                 np.save('./data/' + prefix + 'js_round' + str(r) + '.npy', js)
 
                 a = Analysis()
@@ -200,7 +206,7 @@ class Tester:
         if self.agent._name == 'supervise':
             return avg_data_r, sup_data_r, acc_data, avg_losses_r
         else:
-            return avg_data_r, None, acc_data, avg_losses_r, avg_js_r
+            return avg_data_r, None, acc_data, avg_losses_r, avg_js_r, test_acc_data
         #return avg_data,avg_distance,num_mismatch,num_ask_help,avg_precision,avg_human_input, avg_data_r
 
              

@@ -33,16 +33,16 @@ def main():
     task = MarioTask("testbed", initMarioMode = 2)
     task.env.initMarioMode = 2
     task.env.levelDifficulty = 1
-    task.env.BASE_LEVEL = 50000
+    task.env.BASE_LEVEL = 500000
 
     results = [] 
     names = [] 
 
     
-    iterations = 5
-    rounds = 2
-    learning_samples = 2
-    eval_samples = 5
+    iterations = 20
+    rounds = 15
+    learning_samples = 33
+    eval_samples = 10
     
     if args['noisy']:
         agent = NoisySupervise(IT, useKMM = False)

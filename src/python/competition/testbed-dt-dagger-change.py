@@ -41,10 +41,10 @@ def main():
     with open('type.txt', 'w') as f:
         f.write('dt')
     
-    iterations = 5
-    rounds = 2
-    learning_samples = 2
-    eval_samples = 3
+    iterations = 20
+    rounds = 15
+    learning_samples = 33
+    eval_samples = 10
 
 
     agent = Dagger(IT,useKMM = False)
@@ -58,13 +58,14 @@ def main():
 
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    dagger_data, _, acc, loss, js = T.test(rounds = rounds, iterations = iterations,
+    dagger_data, _, acc, loss, js, test_acc = T.test(rounds = rounds, iterations = iterations,
          learning_samples = learning_samples, eval_samples = eval_samples, prefix = prefix)
 
     np.save('./data/' + prefix + 'dagger_data.npy', dagger_data)
     np.save('./data/' + prefix + 'acc.npy', acc)    
     np.save('./data/' + prefix + 'loss.npy', loss)
     np.save('./data/' + prefix + 'js.npy', js)
+    np.save('./data/' + prefix + 'test_acc.npy', test_acc)
     
     analysis = Analysis()
     analysis.get_perf(dagger_data, range(iterations))
@@ -73,6 +74,10 @@ def main():
     acc_a = Analysis()
     acc_a.get_perf(acc, range(iterations))
     acc_a.plot(names=['DAgger Acc.'], label='Accuracy', filename='./results/' + prefix + 'acc_plots.eps', ylims=[0,1])
+
+    test_acc_a = Analysis()
+    test_acc_a.get_perf(test_acc, range(iterations))
+    test_acc_a.plot(names=['DAgger Acc.'], label='Test Accuracy', filename='./results/' + prefix + 'test_acc_plots.eps', ylims=[0, 1])
 
     loss_a = Analysis()
     loss_a.get_perf(loss, range(iterations))

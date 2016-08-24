@@ -6,6 +6,7 @@ import cPickle as pickle
 from numpy import linalg as LA
 from sklearn import svm
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.cross_validation import train_test_split
 from sklearn import preprocessing
 from sklearn import linear_model
 from sklearn import metrics
@@ -136,18 +137,26 @@ class Learner():
 
 		#self.clf.kernel = 'linear'
 		
+		states_train, states_test, actions_train, actions_test = train_test_split(
+			States, Action, test_size=0.2)
+
 		if(self.useKMM):
 			self.Weights = np.ravel(self.Weights)
 			self.clf.fit(States,Action,self.Weights)
 		elif States.shape[0] > 1:
-                        # print "\nTRAINING\n"
 			print "Training on: " + str(States.shape[0]) + " examples"
-			self.clf.fit(States, Action)
-			acc = self.clf.score(States, Action)
-                        self.accs = acc
+			self.clf.fit(states_train, actions_train)
+			acc = self.clf.score(states_train, actions_train)
+			test_acc = self.clf.score(states_test, actions_test)
+			self.accs = acc
+			self.test_accs = test_acc
 			with open('accs.txt', 'a') as f:
-				f.write(str(States.shape[0]) + " examples: " + str(acc) + "\n")
+				f.write(str(states_train.shape[0]) + " examples: " + str(acc) + "\n")
+			with open('test_accs.txt', 'a') as f:
+				f.write(str(states_test.shape[0]) + " examples: " + str(test_acc) + "\n")
+
 			print "ACCURACY: " + str(acc)
+			print "TEST ACC: " + str(test_acc)
 		#SVM parameters computed via cross validation
 	
 	

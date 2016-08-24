@@ -46,10 +46,10 @@ def main():
 
 
     
-    iterations = 5
-    rounds = 2
-    learning_samples = 2
-    eval_samples = 3
+    iterations = 20
+    rounds = 15
+    learning_samples = 33
+    eval_samples = 10
 
 
     if args['noisy']:
@@ -70,7 +70,7 @@ def main():
 
     exp = EpisodicExperiment(task, agent) 
     E = Evaluator(agent,exp)
-    sl_data, sup_data, acc, loss, js = E.eval(rounds = rounds, iterations = iterations, 
+    sl_data, sup_data, acc, loss, js, test_acc = E.eval(rounds = rounds, iterations = iterations, 
         learning_samples=learning_samples, eval_samples=eval_samples, prefix = prefix,
         directory = dire)
 
@@ -78,6 +78,7 @@ def main():
     np.save('./data/' + prefix + '-acc.npy', acc)
     np.save('./data/' + prefix + '-loss.npy', loss)
     np.save('./data/' + prefix + '-js.npy', js)
+    np.save('./data/' + prefix + '-test_acc.npy', test_acc)
 
 
     analysis = Analysis()
@@ -95,6 +96,10 @@ def main():
     js_a = Analysis()
     js_a.get_perf(js, range(iterations))
     js_a.plot(names=['Supervised Learning'], label='J()', filename='./results/' + prefix + '-js_plots.eps')
+
+    test_acc_a = Analysis()
+    test_acc_a.get_perf(test_acc, range(iterations))
+    test_acc_a.plot(names=['Supervised Learning Acc.'], label='Test Accuracy', filename='./results/' + prefix + '-test_acc_plots.eps', ylims=[0, 1])
 
 
        

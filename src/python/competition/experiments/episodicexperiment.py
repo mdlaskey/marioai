@@ -88,6 +88,7 @@ class EpisodicExperiment(Experiment):
                     all_losses.append([loss])
                     all_js.append([j_error])
                     all_rewards.append([rewards[-1]])
+                
             self.agent.updateModel()
 
             return all_rewards, all_losses, all_js, None

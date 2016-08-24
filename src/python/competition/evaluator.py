@@ -33,6 +33,7 @@ class Evaluator():
         avg_data_r = np.zeros((rounds, iterations))
         avg_losses_r = np.zeros((rounds, iterations))
         acc_data = np.zeros((rounds, iterations))
+        test_acc_data = np.zeros((rounds, iterations))
         avg_js_r = np.zeros((rounds, iterations))
 
         for r in range(rounds):
@@ -41,10 +42,11 @@ class Evaluator():
             self.agent.loadModel()
             self.agent.reset()
 
-            self.agent.reset()
+            # self.agent.reset()
 
             losses = np.zeros(iterations)
             acc = np.zeros(iterations)
+            test_acc = np.zeros(iterations)
             data = np.zeros(iterations)
             js = np.zeros(iterations)
             for t in range(iterations):
@@ -58,6 +60,7 @@ class Evaluator():
                 data[t] = rewards[-1]
                 losses[t] = loss[-1]
                 acc[t] = self.agent.learner.accs
+                test_acc[t] = self.agent.learner.test_accs
                 js[t] = j[-1]
 
                 self.agent.reset()
@@ -66,13 +69,14 @@ class Evaluator():
             avg_data_r[r, :] = data
             avg_losses_r[r, :] = losses
             acc_data[r, :] = acc
+            test_acc_data[r, :] = test_acc
             avg_js_r[r, :] = js
 
             np.save('./data/' + prefix + '-eval_loss_round' + str(r) + '.npy', losses)
             np.save('./data/' + prefix + '-eval_sl_reward_round' + str(r) + '.npy', data)
             np.save('./data/' + prefix + '-eval_acc_round' + str(r) + '.npy', acc)
             np.save('./data/' + prefix + '-eval_js_round' + str(r) + '.npy', js)
-
+            np.save('./data/' + prefix + '-eval_test_acc_round' + str(r) + '.npy', test_acc)
 
             a = Analysis()
             a.get_perf(np.array([data]), range(iterations))
@@ -88,7 +92,7 @@ class Evaluator():
 
 
         self.exp.task.env.setLevelBack()
-        return avg_data_r, None, acc_data, avg_losses_r, avg_js_r
+        return avg_data_r, None, acc_data, avg_losses_r, avg_js_r, test_acc_data
 
 
 
