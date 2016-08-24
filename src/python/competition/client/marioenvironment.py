@@ -16,7 +16,7 @@ class MarioEnvironment(TCPEnvironment):
     initMarioMode = 2
     levelSeed = 1
     levelLength = 4200 / 16.0
-    timeLimit = 20#10#60#40
+    timeLimit = 60#10#60#40
     fastTCP = False
   
     # Other settings

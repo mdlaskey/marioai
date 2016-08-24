@@ -44,12 +44,16 @@ def main():
     results = [] 
     names = [] 
 
+    iterations = 20
+    rounds = 15
+    learning_samples = 33
+    eval_samples = 10
 
     
-    iterations = 5
-    rounds = 2
-    learning_samples = 3
-    eval_samples = 2
+    # iterations = 5
+    # rounds = 2
+    # learning_samples = 3
+    # eval_samples = 2
 
 
     if args['noisy']:
