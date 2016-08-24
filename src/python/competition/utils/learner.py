@@ -31,6 +31,7 @@ class Learner():
 	
 	def __init__(self,sigma=1.0):
 		self.ahqp_solver = AHQP(sigma)
+		self.linear = False
 
 	def Load(self, gamma=1e-3):
 		self.States = pickle.load(open('states.p', 'rb'))
@@ -104,19 +105,28 @@ class Learner():
 
 		Action = np.ravel(Action)
 
-		with open('type.txt', 'r') as f:
-			line = f.readline()
-			print line
-			if line == 'svc':
-				print "svc"
-				self.clf = svm.LinearSVC()
-				self.clf.C = 1e-4#1e-2
-			elif line == 'ent': 
-				print "ent"
-				self.clf = DecisionTreeClassifier(criterion='entropy', max_depth=20)
-			else:
-				print "dt"
-				self.clf = DecisionTreeClassifier(max_depth=100)
+		if self.linear:
+			print "SVC"
+			self.clf = svm.LinearSVC()
+			self.clf.C = 1.e-4
+		else:
+			print "Decision Tree"
+			self.clf = DecisionTreeClassifier(max_depth=100)
+
+
+		# with open('type.txt', 'r') as f:
+		# 	line = f.readline()
+		# 	# print line
+		# 	if line == 'svc':
+		# 		# print "svc"
+		# 		self.clf = svm.LinearSVC()
+		# 		self.clf.C = 1e-4#1e-2
+		# 	elif line == 'ent': 
+		# 		# print "ent"
+		# 		self.clf = DecisionTreeClassifier(criterion='entropy', max_depth=20)
+		# 	else:
+		# 		# print "dt"
+		# 		self.clf = DecisionTreeClassifier(max_depth=100)
 		# # self.clf = DecisionTreeClassifier(max_depth=100)
 		# self.clf = svm.LinearSVC()
 		# #self.clf = DecisionTreeClassifier(max_depth=500)#svm.LinearSVC()
@@ -129,8 +139,8 @@ class Learner():
 		if(self.useKMM):
 			self.Weights = np.ravel(self.Weights)
 			self.clf.fit(States,Action,self.Weights)
-		else:
-                        print "\nTRAINING\n"
+		elif States.shape[0] > 1:
+                        # print "\nTRAINING\n"
 			print "Training on: " + str(States.shape[0]) + " examples"
 			self.clf.fit(States, Action)
 			acc = self.clf.score(States, Action)
@@ -152,7 +162,7 @@ class Learner():
 		# self.novel.fit(supStatesClean)
 
 
-		if (self.verbose or self.use_AHQP):
+		if (self.verbose or self.use_AHQP) and States.shape[0] > 1:
 			self.debugPolicy(States, Action)
 
 
@@ -167,7 +177,7 @@ class Learner():
 	def getScoreNovel(self, States):
 
 
-		print self.novel.gamma
+		# print self.novel.gamma
 		
 		
 		#self.
@@ -199,8 +209,8 @@ class Learner():
 			else:
 				self.labels[i] = 1.0
 			classes[Action[i]][2] = classes[Action[i]][1] / classes[Action[i]][0]
-		for d in classes:
-			print d, classes[d]
+		#for d in classes:
+			# print d, classes[d]
 
 		self.precision = self.clf.score(States, Action)
 

@@ -32,11 +32,12 @@ class NoisySupervise(MarioAgent):
 
     def getTraining(self):
         return self.initialTraining
-    def reset(self):
-        self.isEpisodeOver = False
-        self.trueJumpCounter = 0;
-        self.trueSpeedCounter = 0;
+    # def reset(self):
+    #     self.isEpisodeOver = False
+    #     self.trueJumpCounter = 0;
+    #     self.trueSpeedCounter = 0;
         
+
     def __init__(self,initialTraining,useKMM = False):
         """Constructor"""
         self.trueJumpCounter = 0
@@ -68,18 +69,23 @@ class NoisySupervise(MarioAgent):
 #            self.levelScene[11,13], self.trueJumpCounter)
 #        if (self.isEpisodeOver):
 #            return numpy.ones(5, int)            
-        if self.count <= 6 or self.isLearning:
+        if self.isLearning:
             r = random.random()
             if r > .3:
                 self.action = numpy.zeros(6, int)
                 self.action[5] = 1
                 self.record = True
-                actInt = -1
+                # actInt = -1
             else:
                 actInt = random.randint(0, 2 ** 5 - 1)
                 self.action = self.int2bin(actInt)
                 self.record_action = True
-                self.actionTaken = actInt
+                # self.actionTaken = actInt
+        elif self.count <= 6:
+            self.action = numpy.zeros(6, int)
+            self.action[5] = 1
+            self.record = True
+            # actInt = -1
         # elif self.isLearning:
         #     r = random.random()
         #     if r > .2:
@@ -140,6 +146,10 @@ class NoisySupervise(MarioAgent):
                     self.human_input += 1
                     self.should_take_action = action
                 else:
+                    if self.count > 6 and action != self.actionTaken:
+                            self.mistakes += 1
+
+
                     self.should_take_action = action
                 # if(self.initialTraining):
                 #     self.actions = numpy.vstack((self.actions,numpy.array([action])))
@@ -204,10 +214,21 @@ class NoisySupervise(MarioAgent):
         self.weight = numpy.zeros(1)
         
         self.count = 0
+        self.mistakes = 0
 
     def reset_task(self):
         self.count = 0
+        self.mistakes = 0
 
+    def get_loss(self):
+        try:
+            return self.mistakes / float(self.count)
+        except ZeroDivisionError:
+            return -1.0
+
+    def get_j(self):
+        return self.mistakes
+            
     def printLevelScene(self):
         ret = ""
         for x in range(22):

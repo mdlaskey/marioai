@@ -8,6 +8,7 @@ class MarioEnvironment(TCPEnvironment):
     """ An Environment class, wrapping access to the MarioServer, 
     and allowing interactions to a level. """
 
+
     # Level settings
     levelDifficulty = 0
     levelType = 0
@@ -15,11 +16,11 @@ class MarioEnvironment(TCPEnvironment):
     initMarioMode = 2
     levelSeed = 1
     levelLength = 4200 / 16.0
-    timeLimit = 10#10#60#40
+    timeLimit = 60#10#60#40
     fastTCP = False
   
     # Other settings
-    visualization = True
+    visualization = False
     otherServerArgs = ""
     numberOfFitnessValues = 5
 
@@ -53,8 +54,19 @@ class MarioEnvironment(TCPEnvironment):
     def changeLevel(self):
         self.levelSeed += 1
 
-        if(self.levelSeed == 9 or self.levelSeed == 18):
-            self.levelSeed +=1 
+        # if(self.levelSeed == 9 or self.levelSeed == 18):
+        #     self.levelSeed +=1 
    
     def setLevelBack(self):
-        self.levelSeed = 1
+        self.levelSeed = self.BASE_LEVEL
+        # self.levelSeed = MarioEnvironment.BASE_LEVEL
+
+
+
+
+
+
+
+
+
+

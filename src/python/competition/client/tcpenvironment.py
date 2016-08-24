@@ -17,6 +17,7 @@ class TCPEnvironment(Environment):
             print "TCPENV: agentName ", agentName
         self.client = Client(host, port, agentName)
         self.connected = True
+        self.BASE_LEVEL = 1
 
     def isAvailable(self):
         """returns the availability status of the environment"""

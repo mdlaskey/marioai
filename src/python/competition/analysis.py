@@ -88,7 +88,10 @@ class Analysis():
         if filename is not None:
             plt.savefig(filename, format='eps', dpi=1000)
         #plt.show(block=True)
-        plt.show(block=False)
+        # plt.show(block=False)
+        plt.ioff()
+        plt.clf()
+        plt.cla()
         plt.close()
 
     def reset_density(self):

@@ -36,53 +36,31 @@ def main():
     results = [] 
     names = [] 
 
-    with open('type.txt', 'w') as f:
-        f.write('dt')
-    
-    # # #test dagger
-    # iterations = 1
-    # rounds = 1
-    
+   
     iterations = 50
     rounds = 15
     learning_samples = 2
-    eval_samples = 3
-
-    #agent = Dagger(IT,useKMM = False)
-    #exp = EpisodicExperiment(task, agent) 
-    #T = Tester(agent,exp)
-    #dagger_results = T.test(rounds = rounds,iterations = iterations)
-    #dagger_data = dagger_results[-1]
-    #dagger_results = dagger_results[:-1]
-    #results.append(dagger_results)
-    #names.append('dagger')
-    #pickle.dump(results,open('results.p','wb'))
-
-    #agent = Dagger(IT, useKMM=False)
-    #exp = EpisodicExperiment(task, agent)
-    #T = Tester(agent, exp)
-    #dagger_data, _, acc = T.test(rounds = rounds, iterations = iterations)
-    
+    eval_samples = 3 
+   
     agent = Supervise(IT,useKMM = False)
     exp = EpisodicExperiment(task, agent) 
     T = Tester(agent,exp)
-    prefix = 'dt-sup-change'
-    sl_data, sup_data, acc = T.test(rounds = rounds, iterations = iterations, learning_samples=learning_samples, eval_samples=eval_samples, prefix = prefix)
+    sl_data, sup_data, acc = T.test(rounds = rounds, iterations = iterations)
 
-    np.save('./data/dt-sup-change-sup_data.npy', sup_data)
-    np.save('./data/dt-sup-change-sl_data.npy', sl_data)
-    np.save('./data/dt-sup-change-acc.npy', acc)    
+    np.save('./data/sup_data.npy', sup_data)
+    np.save('./data/sl_data.npy', sl_data)
+    np.save('./data/acc.npy', acc)    
     
-    # IPython.embed()
+    IPython.embed()
 
     analysis = Analysis()
     analysis.get_perf(sup_data, range(iterations))
     analysis.get_perf(sl_data, range(iterations))
-    analysis.plot(names=['Supervisor', 'Supervised Learning'], label='Reward', filename='./results/dt-sup-change-return_plots.eps')#, ylims=[0, 1600])
+    analysis.plot(names=['Supervisor', 'Supervised Learning'], label='Reward', filename='./results/return_plots.eps')#, ylims=[0, 1600])
 
     acc_a = Analysis()
     acc_a.get_perf(acc, range(iterations))
-    acc_a.plot(names=['Supervised Learning Acc.'], label='Accuracy', filename='./results/dt-sup-change-acc_plots.eps')
+    acc_a.plot(names=['Supervised Learning Acc.'], label='Accuracy', filename='./results/acc_plots.eps')
 
     """
 
@@ -221,7 +199,7 @@ def main():
 
     plt.show()
     
-    # IPython.embed()
+    IPython.embed()
     f.close()           
        
 

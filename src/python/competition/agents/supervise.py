@@ -31,10 +31,10 @@ class Supervise(MarioAgent):
 
     def getTraining(self):
         return self.initialTraining
-    def reset(self):
-        self.isEpisodeOver = False
-        self.trueJumpCounter = 0;
-        self.trueSpeedCounter = 0;
+    # def reset(self):
+    #     self.isEpisodeOver = False
+    #     self.trueJumpCounter = 0;
+    #     self.trueSpeedCounter = 0;
         
     def __init__(self,initialTraining,useKMM = False):
         """Constructor"""
@@ -71,12 +71,12 @@ class Supervise(MarioAgent):
             self.action = numpy.zeros(6, int)
             self.action[5] = 1
             self.record = True
-        elif self.isLearning:
+        # elif self.isLearning:
             # actInt = self.should_take_action
-            actInt = self.should_take_action
-            self.action = self.int2bin(actInt)
-            self.record_action = True
-            self.actionTaken = actInt
+            # actInt = self.should_take_action
+            # self.action = self.int2bin(actInt)
+            # self.record_action = True
+            # self.actionTaken = actInt
         else:
             actInt = self.learner.getAction(self.obsArray.T)
             self.action = self.int2bin(actInt)
@@ -125,6 +125,9 @@ class Supervise(MarioAgent):
                     self.human_input += 1
                     self.should_take_action = action
                 else:
+                    if self.count > 6:
+                        if action != self.actionTaken:
+                            self.mistakes += 1
                     self.should_take_action = action
                 # if(self.initialTraining):
                 #     self.actions = numpy.vstack((self.actions,numpy.array([action])))
@@ -189,9 +192,22 @@ class Supervise(MarioAgent):
         self.weight = numpy.zeros(1)
         
         self.count = 0
+        self.mistakes = 0
+
+        print "RESTSETSETSETTSETSETSETasdfasdfasfasdfasf"
 
     def reset_task(self):
         self.count = 0
+        self.mistakes = 0
+
+    def get_loss(self):
+        try:
+            return self.mistakes / float(self.count)
+        except ZeroDivisionError:
+            return -1.0
+
+    def get_j(self):
+        return self.mistakes
 
     def printLevelScene(self):
         ret = ""

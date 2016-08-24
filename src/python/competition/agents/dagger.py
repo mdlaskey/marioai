@@ -100,6 +100,9 @@ class Dagger(MarioAgent):
                     self.states = vstack((self.states,self.prev_obs.T))
                     self.human_input += 1
                 elif self.isLearning:
+                    if self.count > 6 and action != self.actionTaken:
+                        self.mistakes += 1
+                        
                     if((self.actionTaken != action)):
                         self.actions = numpy.vstack((self.actions,numpy.array([action])))
                         self.states = vstack((self.states,self.prev_obs.T))
@@ -157,10 +160,21 @@ class Dagger(MarioAgent):
         self.weight = numpy.zeros(1)
 
         self.count = 0
+        self.mistakes = 0
 
     def reset_task(self):
         self.count = 0
+        self.mistakes = 0
 
+    def get_loss(self):
+        try:
+            return self.mistakes / float(self.count)
+        except ZeroDivisionError:
+            return -1.0 
+
+    def get_j(self):
+        return self.mistakes
+        
     def printLevelScene(self):
         ret = ""
         for x in range(22):
