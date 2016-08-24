@@ -1,7 +1,6 @@
 import math
 import random
 import numpy as np
-import IPython
 import cPickle as pickle
 from numpy import linalg as LA
 from sklearn import svm
@@ -137,9 +136,10 @@ class Learner():
 
 		#self.clf.kernel = 'linear'
 		
+		
 		states_train, states_test, actions_train, actions_test = train_test_split(
 			States, Action, test_size=0.2)
-
+		
 		if(self.useKMM):
 			self.Weights = np.ravel(self.Weights)
 			self.clf.fit(States,Action,self.Weights)
@@ -180,8 +180,6 @@ class Learner():
 			self.ahqp_solver.assembleKernelSparse(States, self.labels)
 			self.ahqp_solver.solveQP()
 	
-		# self.
-		# IPython.embed()
 
 	def getScoreNovel(self, States):
 
@@ -189,9 +187,6 @@ class Learner():
 		# print self.novel.gamma
 		
 		
-		#self.
-		#IPython.embed()
-		#IPython.embed()
 		num_samples = States.shape[0]
 		avg = 0
 		for i in range(num_samples):
@@ -248,16 +243,6 @@ class Learner():
 			return self.clf.predict(state)
 
 	def askForHelp(self, state):
-		# IPython.embed()
-		# if(abs(state[1]) > 80  and abs(state[2]) == 0):
-		# IPython.embed()
-		# return -1
-		# else:
-		# return 1
-
-		# state = self.scaler.transform(state)
-		
-		# state = preprocessing.normalize(state,norm='l2')
 		return self.ahqp_solver.predict(csr_matrix(state))
 
  	def getAction(self,state):

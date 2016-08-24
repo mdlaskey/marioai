@@ -3,7 +3,6 @@ __date__ = "$May 13, 2009 1:25:30 AM$"
 
 from client import Client
 from environment import Environment
-import IPython
 from utils.dataadaptor import show
 
 class TCPEnvironment(Environment):

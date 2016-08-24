@@ -11,7 +11,6 @@ from agents.ahude import Ahude
 from agents.dagger import Dagger 
 from agents.supervise import Supervise
 from agents.sheath import Sheath
-import IPython
 import matplotlib.pyplot as plt
 import numpy as np
 from tester import Tester 

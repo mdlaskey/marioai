@@ -7,7 +7,6 @@ from agents.forwardagent import ForwardAgent
 from agents.forwardrandomagent import ForwardRandomAgent
 from agents.ahude import Ahude
 from agents.dagger import Dagger 
-import IPython
 import matplotlib.pyplot as plt
 import numpy as np
 from analysis import Analysis
@@ -86,7 +85,6 @@ class Tester:
             for t in range(iterations):
                 
                 rewards, loss, j, sup_rewards,  = self.exp.doEpisodes(1, learning_samples, eval_samples)
-                # IPython.embed()
                 rewards = np.mean(rewards, axis=0)
                 loss = np.mean(loss, axis=0)
                 j = np.mean(j, axis=0)
@@ -186,7 +184,7 @@ class Tester:
             avg_precision = precision+avg_precision
             avg_human_input = avg_human_input + human_input
           
-            #self.exp.task.env.changeLevel()
+            # self.exp.task.env.changeLevel()
         
         num_ask_help = num_ask_help/rounds
         num_mismatch = num_mismatch/rounds

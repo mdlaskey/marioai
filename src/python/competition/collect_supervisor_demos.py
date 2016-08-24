@@ -12,7 +12,6 @@ from agents.dagger import Dagger
 from agents.supervise import Supervise
 from agents.noisy_supervise import NoisySupervise
 from agents.sheath import Sheath
-import IPython
 import matplotlib.pyplot as plt
 import numpy as np
 from tester import Tester 

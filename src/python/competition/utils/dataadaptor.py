@@ -2,7 +2,6 @@ __author__ = "Sergey Karakovskiy, sergey at idsia fullstop ch"
 __date__ = "$Apr 30, 2009 1:53:54 PM$"
 
 import numpy as np
-import IPython
     
 from bitsTest import powsof2
 
@@ -218,7 +217,6 @@ def extractObservation(data):
             pastActions.pop(0)
             pastActions.append(action_vec)
 
-        # IPython.embed()
         obs_array = asmbleObsv(pastLevels,pastActions,mario_state)
         return (mayMarioJump, isMarioOnGround, marioFloats, enemiesFloats, levelScene, dummy,action,obs_array)
     else:

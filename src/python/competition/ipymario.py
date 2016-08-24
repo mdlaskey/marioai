@@ -9,7 +9,6 @@ from agents.forwardagent import ForwardAgent
 from agents.forwardrandomagent import ForwardRandomAgent
 from agents.ahude import Ahude
 from agents.dagger import Dagger 
-import IPython
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -76,7 +75,7 @@ def main():
             #agent.notComplete = False
             print "TRACK COMPLETE"
         #IPython.embed()
-        IPython.embed()
+        # IPython.embed()
         f.close()           
        
 

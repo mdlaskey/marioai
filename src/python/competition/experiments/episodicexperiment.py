@@ -2,7 +2,6 @@ __author__ = "Sergey Karakovskiy, sergey at idsia fullstop ch"
 __date__ = "$May 12, 2009 11:18:19 PM$"
 
 from experiment import Experiment
-import IPython 
 
 
 #class EpisodicExperiment(Experiment):

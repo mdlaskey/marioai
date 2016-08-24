@@ -1,6 +1,5 @@
 from analysis import Analysis
 import numpy as np
-import IPython
 data = np.load("data/dt-sup-eval-eval_sl_reward_round0.npy")
 if len(data.shape) == 1:
 #    print "hi"

@@ -11,7 +11,6 @@ from agents.forwardagent import ForwardAgent
 from agents.forwardrandomagent import ForwardRandomAgent
 from agents.ahude import Ahude
 from agents.dagger import Dagger 
-import IPython
 import matplotlib.pyplot as plt
 import numpy as np
 import cPickle as pickle
