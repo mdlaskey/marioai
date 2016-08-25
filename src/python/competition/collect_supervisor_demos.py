@@ -38,7 +38,7 @@ def main():
     names = [] 
 
     iterations = 20
-    rounds = 15
+    rounds = 30
     learning_samples = 33
     eval_samples = 10
     
