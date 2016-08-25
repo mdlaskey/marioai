@@ -30,6 +30,7 @@ class Collector():
 
         for r in range(rounds):
             self.agent.reset()
+            print "Trial: " + str(r)
             for t in range(iterations):
                 print "iteration: " + str(t)
                 self.exp.collectEpisodes(1, learning_samples)

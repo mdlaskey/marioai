@@ -36,6 +36,7 @@ class Evaluator():
         avg_js_r = np.zeros((rounds, iterations))
 
         for r in range(rounds):
+            print "Trial: " + str(r)
             self.agent.newModel()
             self.agent.saveModel()
             self.agent.loadModel()

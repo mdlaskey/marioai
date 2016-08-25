@@ -61,7 +61,7 @@ class Tester:
         # self.exp.task.env.changeLevel()
 
         for r in range(rounds):
-
+            print "Trial: " + str(r)
             self.agent.initialTraining = True
             self.exp.doEpisodes(1)
             self.agent.newModel()
