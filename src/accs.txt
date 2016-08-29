@@ -1,10 +1,2 @@
-772 examples: 1.0
-1516 examples: 1.0
-2285 examples: 1.0
-3040 examples: 1.0
-3800 examples: 1.0
-788 examples: 1.0
-1597 examples: 1.0
-2367 examples: 1.0
-3124 examples: 1.0
-3884 examples: 1.0
+8435 examples: 1.0
+16809 examples: 1.0

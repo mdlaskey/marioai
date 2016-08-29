@@ -162,6 +162,9 @@ class EpisodicExperiment(Experiment):
         self.agent.states = pickle.load(open(directory + 'states_' + 'round' + str(round) + '_iter' + str(iteration) + '.p', 'r'))
         self.agent.actions = pickle.load(open(directory + 'actions_' + 'round' + str(round) + '_iter' + str(iteration) + '.p', 'r'))
 
+        # for incompatible versions of scipy
+        self.agent.states.format = 'coo'
+
         self.agent.updateModel()
 
         self.agent.isLearning = False
